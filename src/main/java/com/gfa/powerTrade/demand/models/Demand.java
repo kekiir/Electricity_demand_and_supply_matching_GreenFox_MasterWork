@@ -1,7 +1,7 @@
-package com.gfa.powerTrade.capacity.models;
+package com.gfa.powerTrade.demand.models;
 
 import com.gfa.powerTrade.common.models.Hour;
-import com.gfa.powerTrade.suplier.models.Suplier;
+import com.gfa.powerTrade.consumers.models.Consumer;
 import lombok.*;
 import javax.persistence.*;
 
@@ -10,19 +10,18 @@ import javax.persistence.*;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "capacities")
-public class Capacity {
+@Table(name = "demands")
+public class Demand {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "capacity_id")
+  @Column(name = "demand_id")
   private Integer id;
   private float amount;
-  private float available;
-  @OneToOne(mappedBy = "capacity",cascade = CascadeType.ALL)
+  private float covered;
+  @OneToOne(mappedBy = "demand",cascade = CascadeType.ALL)
   private Hour hour;
   private float price;
   @ManyToOne
-  private Suplier suplier;
-
+  private Consumer consumer;
 }

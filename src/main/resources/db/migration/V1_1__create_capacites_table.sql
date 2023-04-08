@@ -5,6 +5,5 @@ CREATE TABLE IF NOT EXISTS capacities
   amount      FLOAT  NOT NULL,
   available     FLOAT  NOT NULL,
   price float not null ,
-PRIMARY KEY (capacity_id),
-FOREIGN KEY(suplier_id)REFERENCES supliers(id)
+PRIMARY KEY (capacity_id), FOREIGN KEY(suplier_id)REFERENCES supliers(id)
 )

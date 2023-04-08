@@ -1,5 +1,7 @@
-package com.gfa.powerTrade.capacity.models;
+package com.gfa.powerTrade.common.models;
 
+import com.gfa.powerTrade.capacity.models.Capacity;
+import com.gfa.powerTrade.demand.models.Demand;
 import lombok.*;
 import javax.persistence.*;
 import java.util.Date;
@@ -24,5 +26,8 @@ public class Hour {
   @OneToOne
   @JoinColumn(name = "capacity_id")
   private Capacity capacity;
+  @OneToOne
+  @JoinColumn(name = "demand_id")
+  private Demand demand;
 
 }
