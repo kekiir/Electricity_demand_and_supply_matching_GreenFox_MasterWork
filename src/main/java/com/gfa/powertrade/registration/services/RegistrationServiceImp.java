@@ -26,7 +26,7 @@ public class RegistrationServiceImp implements RegistrationService {
       AlreadyTakenUsernameException, InvalidPasswordException {
     validateRegistration(reg);
     if (reg.getUserType().toUpperCase().equals(UserType.SUPPLIER.toString())) {
-      return saveConsumer(reg);
+      return saveSupplier(reg);
     } else {
       return saveConsumer(reg);
     }
