@@ -1,0 +1,1 @@
+ALTER TABLE capacities MODIFY energy_source VARCHAR(255);

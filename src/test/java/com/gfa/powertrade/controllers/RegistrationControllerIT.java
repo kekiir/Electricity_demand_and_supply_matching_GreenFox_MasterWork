@@ -2,7 +2,6 @@ package com.gfa.powertrade.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gfa.powertrade.registration.models.RegistrationRequestDTO;
-import com.gfa.powertrade.registration.services.RegistrationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,7 +10,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-
 import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.core.Is.is;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -26,7 +24,6 @@ class RegistrationControllerIT {
   @Autowired
   private MockMvc mockMvc;
   @Autowired
-  private RegistrationService registrationService;
   private ObjectMapper objectMapper;
 
   @BeforeEach
@@ -35,8 +32,8 @@ class RegistrationControllerIT {
   }
 
   @Test
-  public void register_should_returnHttp201_when_registrationIsSuccessful() throws Exception {
-    String username = "newPlayer4";
+  public void register_should_returnHttp201_when_SupplierregistrationIsSuccessful() throws Exception {
+    String username = "newPlayer2";
     RegistrationRequestDTO reg = new RegistrationRequestDTO(username, "password", "supplier");
 
     mockMvc.perform(post("/register")
@@ -51,9 +48,9 @@ class RegistrationControllerIT {
   }
 
   @Test
-  public void register_should_setsDefaultKingdomName_when_kingdomNameIsNotGiven() throws Exception {
-    String username = "newPlayer5";
-    RegistrationRequestDTO reg = new RegistrationRequestDTO(username, "password", null);
+  public void register_should_returnHttp201_when_ConsumerregistrationIsSuccessful() throws Exception {
+    String username = "newPlayer4";
+    RegistrationRequestDTO reg = new RegistrationRequestDTO(username, "password", "consumer");
 
     mockMvc.perform(post("/register")
             .contentType(APPLICATION_JSON)
@@ -63,36 +60,12 @@ class RegistrationControllerIT {
         .andExpect(jsonPath("$.id").isNumber())
         .andExpect(jsonPath("$.username", is(username)))
         .andExpect(jsonPath("$.password").doesNotExist())
-        .andExpect(jsonPath("$.kingdomId").isNumber());
-
-//    Player player = playerRepository.findByUsername(username).get();
-//    assertEquals(username + "'s kingdom", player.getKingdom().getName());
-  }
-
-  @Test
-  public void register_should_setsGivenKingdomName_when_kingdomNameIsGiven() throws Exception {
-    String username = "newPlayer6";
-    String kingdomName = "kingdom";
-
-    RegistrationRequestDTO reg = new RegistrationRequestDTO(username, "password", kingdomName);
-
-    mockMvc.perform(post("/register")
-            .contentType(APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(reg)))
-        .andExpect(status().is(201))
-        .andExpect(content().contentType(APPLICATION_JSON))
-        .andExpect(jsonPath("$.id").isNumber())
-        .andExpect(jsonPath("$.username", is(username)))
-        .andExpect(jsonPath("$.password").doesNotExist())
-        .andExpect(jsonPath("$.kingdomId").isNumber());
-
-//    Player player = playerRepository.findByUsername(username).get();
-//    assertEquals(kingdomName, player.getKingdom().getName());
+        .andExpect(jsonPath("$.userType", is("CONSUMER")));
   }
 
   @Test
   public void register_should_returnHttp409_when_usernameIsAlreadyTaken() throws Exception {
-    RegistrationRequestDTO reg = new RegistrationRequestDTO("defaultPlayer", "password", "kingdom");
+    RegistrationRequestDTO reg = new RegistrationRequestDTO("defaultPlayer", "password", "supplier");
 
     mockMvc.perform(post("/register")
             .contentType(APPLICATION_JSON)
@@ -108,7 +81,7 @@ class RegistrationControllerIT {
     String username = "newPlayer7";
     String password = "pass";
 
-    RegistrationRequestDTO reg = new RegistrationRequestDTO(username, password, "kingdom");
+    RegistrationRequestDTO reg = new RegistrationRequestDTO(username, password, "supplier");
 
     mockMvc.perform(post("/register")
             .contentType(APPLICATION_JSON)
@@ -121,7 +94,7 @@ class RegistrationControllerIT {
 
   @Test
   public void register_should_returnHttp400_when_usernameIsMissing() throws Exception {
-    RegistrationRequestDTO reg = new RegistrationRequestDTO(null, "password", "kingdom");
+    RegistrationRequestDTO reg = new RegistrationRequestDTO(null, "password", "supplier");
 
     mockMvc.perform(post("/register")
             .contentType(APPLICATION_JSON)
@@ -136,7 +109,7 @@ class RegistrationControllerIT {
   public void register_should_returnHttp400_when_passwordIsMissing() throws Exception {
     String username = "newPlayer8";
 
-    RegistrationRequestDTO reg = new RegistrationRequestDTO(username, null, "kingdom");
+    RegistrationRequestDTO reg = new RegistrationRequestDTO(username, null, "suplier");
 
     mockMvc.perform(post("/register")
             .contentType(APPLICATION_JSON)
@@ -148,8 +121,23 @@ class RegistrationControllerIT {
   }
 
   @Test
+  public void register_should_returnHttp400_when_usertypeIsMissing() throws Exception {
+    String username = "newPlayer8";
+
+    RegistrationRequestDTO reg = new RegistrationRequestDTO(username, "pasword", "");
+
+    mockMvc.perform(post("/register")
+            .contentType(APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(reg)))
+        .andExpect(status().is(400))
+        .andExpect(content().contentType(APPLICATION_JSON))
+        .andExpect(jsonPath("$.status", is("error")))
+        .andExpect(jsonPath("$.message", is("Usertype is required.")));
+  }
+
+  @Test
   public void register_should_returnHttp400_when_usernameAndPasswordAreMissing() throws Exception {
-    RegistrationRequestDTO reg = new RegistrationRequestDTO(null, null, null);
+    RegistrationRequestDTO reg = new RegistrationRequestDTO(null, null, "supplier");
 
     mockMvc.perform(post("/register")
             .contentType(APPLICATION_JSON)
@@ -162,6 +150,20 @@ class RegistrationControllerIT {
   }
 
   @Test
+  public void register_should_returnHttp400_when_usernamePasswordAndUsertypeAreMissing() throws Exception {
+    RegistrationRequestDTO reg = new RegistrationRequestDTO("", "", "");
+
+    mockMvc.perform(post("/register")
+            .contentType(APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(reg)))
+        .andExpect(status().is(400))
+        .andExpect(content().contentType(APPLICATION_JSON))
+        .andExpect(jsonPath("$.status", is("error")))
+        .andExpect(jsonPath("$.message", anyOf(is("Username and password are required."),
+            is("Username, password and usertype are required."))));
+  }
+
+  @Test
   public void register_should_returnHttp400_when_emptyRequestWasSent() throws Exception {
     RegistrationRequestDTO reg = null;
 
@@ -171,7 +173,7 @@ class RegistrationControllerIT {
         .andExpect(status().is(400))
         .andExpect(content().contentType(APPLICATION_JSON))
         .andExpect(jsonPath("$.status", is("error")))
-        .andExpect(jsonPath("$.message", is("Username and password are required.")));
+        .andExpect(jsonPath("$.message", is("Username, password and usertype are required.")));
   }
 
 }

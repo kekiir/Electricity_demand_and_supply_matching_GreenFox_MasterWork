@@ -2,6 +2,7 @@ package com.gfa.powertrade.user.services;
 
 import com.gfa.powertrade.consumers.repositories.ConsumerRepository;
 import com.gfa.powertrade.registration.models.UserType;
+import com.gfa.powertrade.supplier.models.Supplier;
 import com.gfa.powertrade.supplier.repository.SupplierRepository;
 import com.gfa.powertrade.supplier.services.SupplierService;
 import com.gfa.powertrade.user.models.User;
@@ -13,7 +14,7 @@ import java.util.Optional;
 @AllArgsConstructor
 public class UserServiceImp implements UserService {
 
-  private SupplierService supplierService;
+
   private ConsumerRepository consumerRepository;
   private SupplierRepository supplierRepository;
 
@@ -22,11 +23,15 @@ public class UserServiceImp implements UserService {
 
     if (userType.toUpperCase().equals(UserType.SUPPLIER.toString())) {
       if (supplierRepository.findByUsername(username).isPresent()) {
-        return Optional.of(supplierRepository.findByUsername(username).get());
+        User supplier = supplierRepository.findByUsername(username).get();
+        supplier.setUserType(UserType.SUPPLIER);
+        return Optional.of(supplier);
       } else return Optional.empty();
     } else {
       if (consumerRepository.findByUsername(username).isPresent()) {
-        return Optional.of(consumerRepository.findByUsername(username).get());
+        User consumer = consumerRepository.findByUsername(username).get();
+        consumer.setUserType(UserType.CONSUMER);
+        return Optional.of(consumer);
       } else return Optional.empty();
     }
   }

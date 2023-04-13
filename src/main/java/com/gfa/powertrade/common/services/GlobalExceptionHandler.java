@@ -33,7 +33,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
       HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
     StatusResponseDTO responseDTO = new StatusResponseDTO();
     responseDTO.setStatusError();
-    responseDTO.setMessage("Username and password are required.");
+    responseDTO.setMessage("JSON is not readable.");
     return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
   }
 

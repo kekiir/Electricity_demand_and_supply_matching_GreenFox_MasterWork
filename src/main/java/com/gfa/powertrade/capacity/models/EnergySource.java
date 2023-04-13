@@ -1,4 +1,4 @@
-package com.gfa.powertrade.supplier.models;
+package com.gfa.powertrade.capacity.models;
 
 public enum EnergySource {
   COAL,

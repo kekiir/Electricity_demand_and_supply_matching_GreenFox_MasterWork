@@ -2,7 +2,6 @@ package com.gfa.powertrade.capacity.models;
 
 import com.gfa.powertrade.common.models.TimeRange;
 import com.gfa.powertrade.contract.models.Contract;
-import com.gfa.powertrade.supplier.models.EnergySource;
 import com.gfa.powertrade.supplier.models.Supplier;
 import lombok.*;
 import javax.persistence.*;
@@ -13,6 +12,7 @@ import java.util.List;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Table(name = "capacities")
 public class Capacity {
 
@@ -20,7 +20,9 @@ public class Capacity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "capacity_id")
   private Integer id;
-  @Column(columnDefinition = "enum('COAL','GAS','NUCLEAR','HYDRO','WIND','SOLAR','BIO','WASTE')")
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "energy_source")
   private EnergySource energySource;
   private float amount;
   private float available;

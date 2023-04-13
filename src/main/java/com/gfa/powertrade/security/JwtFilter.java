@@ -28,7 +28,7 @@ public class JwtFilter extends OncePerRequestFilter {
   private ObjectMapper objectMapper;
 
   @Autowired
-  public JwtFilter(JwtSystemKeys jwtSystemKeys, UserService playerService) {
+  public JwtFilter(JwtSystemKeys jwtSystemKeys, UserService userService) {
     this.jwtSystemKeys = jwtSystemKeys;
     this.userService = userService;
     this.objectMapper = new ObjectMapper();
@@ -104,7 +104,7 @@ public class JwtFilter extends OncePerRequestFilter {
   @Override
   protected boolean shouldNotFilter(HttpServletRequest request) {
     String reqPath = request.getServletPath();
-    return (!reqPath.startsWith("/kingdom") && !reqPath.equals("/players"));
+    return (!reqPath.startsWith("/supplier") && !reqPath.equals("/consumer"));
   }
 
 }

@@ -30,7 +30,7 @@ public class SecurityConfig {
         .addFilterBefore(jwtFilter, BasicAuthenticationFilter.class)
         .authorizeRequests()
         .antMatchers("/**").permitAll()
-        .antMatchers("/kingdom", "/kingdom/**", "/players").authenticated()
+        .antMatchers("/supplier", "/supplier/**", "/consumer","/consumer/**" ) .authenticated()
         .and()
         .exceptionHandling()
         .authenticationEntryPoint(new AuthenticationExceptionHandler())
