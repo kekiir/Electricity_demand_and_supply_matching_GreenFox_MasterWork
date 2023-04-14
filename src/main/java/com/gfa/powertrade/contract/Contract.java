@@ -1,4 +1,4 @@
-package com.gfa.powertrade.contract.models;
+package com.gfa.powertrade.contract;
 
 import com.gfa.powertrade.capacity.models.Capacity;
 import com.gfa.powertrade.demand.models.Demand;

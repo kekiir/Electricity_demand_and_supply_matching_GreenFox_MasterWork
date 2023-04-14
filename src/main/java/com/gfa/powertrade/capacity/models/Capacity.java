@@ -1,7 +1,7 @@
 package com.gfa.powertrade.capacity.models;
 
 import com.gfa.powertrade.common.models.TimeRange;
-import com.gfa.powertrade.contract.models.Contract;
+import com.gfa.powertrade.contract.Contract;
 import com.gfa.powertrade.supplier.models.Supplier;
 import lombok.*;
 import javax.persistence.*;
@@ -22,13 +22,13 @@ public class Capacity {
   private Integer id;
 
   @Enumerated(EnumType.STRING)
-  @Column(name = "energy_source")
+  @Column(name = "energy_source", columnDefinition = "ENUM('COAL','GAS','NUCLEAR','HYDRO','WIND','SOLAR','BIO','WASTE')")
   private EnergySource energySource;
-  private float amount;
-  private float available;
+  private Double amount;
+  private Double available;
   @OneToOne(mappedBy = "capacity",cascade = CascadeType.ALL)
   private TimeRange timeRange;
-  private float price;
+  private Double price;
   @ManyToOne
   private Supplier supplier;
   @OneToMany (mappedBy = "capacity")

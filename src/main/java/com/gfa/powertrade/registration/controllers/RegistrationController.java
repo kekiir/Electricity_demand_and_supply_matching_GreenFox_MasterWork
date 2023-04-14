@@ -1,7 +1,7 @@
 package com.gfa.powertrade.registration.controllers;
 
 import com.gfa.powertrade.common.exceptions.InvalidUserTypeException;
-import com.gfa.powertrade.common.models.StatusResponseDTO;
+import com.gfa.powertrade.common.models.ErrorDTO;
 import com.gfa.powertrade.registration.exceptions.AlreadyTakenUsernameException;
 import com.gfa.powertrade.registration.exceptions.InvalidPasswordException;
 import com.gfa.powertrade.registration.models.RegistrationRequestDTO;
@@ -27,11 +27,9 @@ public class RegistrationController {
           registrationRequestDTO);
       return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     } catch (AlreadyTakenUsernameException e) {
-      return ResponseEntity.status(409).body(new StatusResponseDTO("error", e.getMessage()));
-    } catch (InvalidPasswordException e) {
-      return ResponseEntity.status(406).body(new StatusResponseDTO("error", e.getMessage()));
-    } catch (InvalidUserTypeException e) {
-      return ResponseEntity.status(406).body(new StatusResponseDTO("error", e.getMessage()));
+      return ResponseEntity.status(409).body(new ErrorDTO (e.getMessage()));
+    } catch (InvalidPasswordException | InvalidUserTypeException e) {
+      return ResponseEntity.status(406).body(new ErrorDTO (e.getMessage()));
     }
 
   }

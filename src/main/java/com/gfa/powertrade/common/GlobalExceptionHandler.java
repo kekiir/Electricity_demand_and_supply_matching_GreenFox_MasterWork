@@ -1,7 +1,7 @@
-package com.gfa.powertrade.common.services;
+package com.gfa.powertrade.common;
 
 import com.gfa.powertrade.common.models.ErrorDTO;
-import com.gfa.powertrade.common.models.StatusResponseDTO;
+import com.gfa.powertrade.common.models.ErrorListResponseDTO;
 import com.gfa.powertrade.login.exceptions.LoginFailureException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.*;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
@@ -20,29 +20,29 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
   @Override
   protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
       HttpHeaders headers, HttpStatus status, WebRequest request) {
-    StatusResponseDTO statusResponseDTO = new StatusResponseDTO();
-    statusResponseDTO.setStatusError();
-    List<String> errorMessages = collectErrorMessages(ex);
-    String errorMessage = concatErrorMessages(errorMessages);
-    statusResponseDTO.setMessage(errorMessage);
-    return new ResponseEntity<>(statusResponseDTO, HttpStatus.BAD_REQUEST);
+    ErrorListResponseDTO errorListResponseDTO = new ErrorListResponseDTO();
+    List<String> errors = ex.getBindingResult()
+        .getFieldErrors()
+        .stream()
+        .map(DefaultMessageSourceResolvable::getDefaultMessage)
+        .collect(Collectors.toList());
+    errorListResponseDTO.setMessage(errors);
+
+    return new ResponseEntity<>(errorListResponseDTO, HttpStatus.BAD_REQUEST);
   }
 
   @Override
   protected ResponseEntity<Object> handleHttpMessageNotReadable(
       HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-    StatusResponseDTO responseDTO = new StatusResponseDTO();
-    responseDTO.setStatusError();
-    responseDTO.setMessage("JSON is not readable.");
-    return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+    ErrorDTO errorDTO = new ErrorDTO("JSON is not readable.");
+
+    return new ResponseEntity<>(errorDTO, HttpStatus.BAD_REQUEST);
   }
 
   @ExceptionHandler(LoginFailureException.class)
-  public ResponseEntity<StatusResponseDTO> handle(LoginFailureException ex) {
-    StatusResponseDTO statusResponseDTO = new StatusResponseDTO();
-    statusResponseDTO.setStatusError();
-    statusResponseDTO.setMessage(ex.getMessage());
-    return ResponseEntity.status(401).body(statusResponseDTO);
+  public ResponseEntity<ErrorDTO> handle(LoginFailureException ex) {
+    ErrorDTO errorDTO = new ErrorDTO(ex.getMessage());
+    return ResponseEntity.status(401).body(errorDTO);
   }
 
   public ResponseEntity<ErrorDTO> handleNotAcceptable(RuntimeException ex) {

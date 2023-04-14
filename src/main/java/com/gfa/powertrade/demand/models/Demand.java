@@ -2,7 +2,7 @@ package com.gfa.powertrade.demand.models;
 
 import com.gfa.powertrade.common.models.TimeRange;
 import com.gfa.powertrade.consumers.models.Consumer;
-import com.gfa.powertrade.contract.models.Contract;
+import com.gfa.powertrade.contract.Contract;
 import lombok.*;
 import javax.persistence.*;
 import java.util.List;
@@ -19,11 +19,11 @@ public class Demand {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "demand_id")
   private Integer id;
-  private float amount;
-  private float covered;
+  private Double amount;
+  private Double covered;
   @OneToOne(mappedBy = "demand",cascade = CascadeType.ALL)
   private TimeRange timeRange;
-  private float price;
+  private Double price;
   @ManyToOne
   private Consumer consumer;
   @OneToMany (mappedBy = "demand")

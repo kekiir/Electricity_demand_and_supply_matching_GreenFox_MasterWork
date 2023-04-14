@@ -10,9 +10,9 @@ public class CapacityResponseDTO {
 
     private Integer id;
     private String energySource;
-    private float amountMW;
-    private float available;
-    private float price;
+    private Double amountMW;
+    private Double available;
+    private Double price;
     private LocalDateTime from;
     private LocalDateTime to;
 
