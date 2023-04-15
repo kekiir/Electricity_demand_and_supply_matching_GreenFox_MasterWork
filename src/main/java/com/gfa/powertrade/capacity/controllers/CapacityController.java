@@ -26,7 +26,7 @@ public class CapacityController {
     try {
       CapacityResponseDTO capacityResponseDTO = capacityService.createCapacity(user, capacityRequestDto);
       return ResponseEntity.ok().body(capacityResponseDTO);
-    } catch (IllegalArgumentException | InvalidEnergySourceException e) {
+    } catch (IllegalArgumentException | InvalidEnergySourceException | ForbiddenActionException e) {
       return ResponseEntity.status(406).body(new ErrorDTO(e.getMessage()));
     }
 
@@ -47,8 +47,6 @@ public class CapacityController {
   }
 
 
-
-
   @DeleteMapping("/{idString}")
   public ResponseEntity<?> deleteCapacity(@PathVariable @NotBlank(message = "Id is required.") String idString,
       UsernamePasswordAuthenticationToken auth) {
@@ -63,7 +61,7 @@ public class CapacityController {
     try {
       capacityService.deleteCapacityById(id, user);
       return ResponseEntity.ok().body("Capacity with id " + id + " has been deleted successfully.");
-    } catch (IdNotFoundException | IllegalArgumentException e) {
+    } catch (IdNotFoundException | IllegalArgumentException | ForbiddenActionException e) {
       return ResponseEntity.status(406).body(new ErrorDTO(e.getMessage()));
     }
   }

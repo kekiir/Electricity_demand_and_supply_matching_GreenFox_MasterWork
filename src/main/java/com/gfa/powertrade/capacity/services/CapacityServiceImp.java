@@ -26,20 +26,22 @@ public class CapacityServiceImp implements CapacityService {
   private TimeRangeRepository timeRangeRepository;
 
   @Override
-  public void deleteCapacityById(Integer id, User user) throws IdNotFoundException, IllegalArgumentException {
+  public void deleteCapacityById(Integer id, User user) throws IdNotFoundException, IllegalArgumentException, ForbiddenActionException {
+  Supplier supplier = validateUsertype(user);
+
     Capacity capacity = capacityRepository.findById(id)
         .orElseThrow(() -> new IdNotFoundException());
+    capacityBelongsToSupplier(capacity, supplier.getId());
     capacityRepository.delete(capacity);
 
   }
 
   @Override
   public CapacityUpdatedResponseDTO updateCapacityById(CapacityUpdateRequestDTO capacityUpdateRequestDTO, User user) {
-    Supplier supplier = (Supplier) user;
+    Supplier supplier = validateUsertype(user);
     checkCorrectEnergySource(capacityUpdateRequestDTO.getEnergySource());
     Capacity capacity = capacityRepository.findById(capacityUpdateRequestDTO.getId())
         .orElseThrow(() -> new IdNotFoundException());
-
     capacityBelongsToSupplier(capacity, supplier.getId());
     validateGivenDates(capacityUpdateRequestDTO.getFrom(),capacityUpdateRequestDTO.getTo());
     updataCapacity(capacityUpdateRequestDTO, capacity);
@@ -119,9 +121,13 @@ public class CapacityServiceImp implements CapacityService {
         timeService.longToLocalDateTime(capacity.getTimeRange().getTo()));
   }
 
-  public void validateUsertype(User user) throws ForbiddenActionException {
-    if (!user.getUserType().equals(UserType.SUPPLIER))
+  public Supplier validateUsertype(User user) throws ForbiddenActionException {
+    Supplier supplier;
+    try {
+      return supplier = (Supplier) user;
+    }catch (RuntimeException e){
       throw new ForbiddenActionException();
+    }
   }
 
   public void validateGivenDates(String fromString, String toString) throws IllegalArgumentException {
@@ -138,14 +144,12 @@ public class CapacityServiceImp implements CapacityService {
     } catch (DateTimeException e) {
       throw new IllegalArgumentException("Invalid 'to' date");
     }
-
     if (!from.isAfter(tomorrow) || !to.isAfter(tomorrow)) {
       throw new IllegalArgumentException("Dates accepted from 24h ahead.");
     }
     if (from.isAfter(to)) {
       throw new IllegalArgumentException("'From' date have to be earlier than 'to' date.");
     }
-
   }
 
   public void checkCorrectEnergySource(String energySource) throws InvalidEnergySourceException {
