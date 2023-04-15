@@ -1,9 +1,8 @@
 package com.gfa.powertrade.capacity.controllers;
 
-import com.gfa.powertrade.capacity.models.CapacityRequestDTO;
-import com.gfa.powertrade.capacity.models.CapacityResponseDTO;
+import com.gfa.powertrade.capacity.models.*;
 import com.gfa.powertrade.capacity.services.CapacityService;
-import com.gfa.powertrade.common.exceptions.InvalidEnergySourceException;
+import com.gfa.powertrade.common.exceptions.*;
 import com.gfa.powertrade.common.models.ErrorDTO;
 import com.gfa.powertrade.user.models.User;
 import lombok.AllArgsConstructor;
@@ -11,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 
 @AllArgsConstructor
 @RestController
@@ -25,11 +25,51 @@ public class CapacityController {
     User user = ((User) auth.getPrincipal());
     try {
       CapacityResponseDTO capacityResponseDTO = capacityService.createCapacity(user, capacityRequestDto);
-return ResponseEntity.ok().body(capacityResponseDTO);
-    } catch (IllegalArgumentException |InvalidEnergySourceException e) {
+      return ResponseEntity.ok().body(capacityResponseDTO);
+    } catch (IllegalArgumentException | InvalidEnergySourceException e) {
       return ResponseEntity.status(406).body(new ErrorDTO(e.getMessage()));
     }
 
   }
+
+
+  @PutMapping("")
+  public ResponseEntity<?> updateCapacity( @Valid @RequestBody CapacityUpdateRequestDTO capacityUpdateRequestDTO,
+      UsernamePasswordAuthenticationToken auth) {
+
+    User user = ((User) auth.getPrincipal());
+    try {
+      return ResponseEntity.ok().body(capacityService.updateCapacityById(capacityUpdateRequestDTO, user));
+    } catch (IdNotFoundException | IllegalArgumentException | ForbiddenActionException | ContractedCapacityException e) {
+      return ResponseEntity.status(406).body(new ErrorDTO(e.getMessage()));
+    }
+
+  }
+
+
+
+
+  @DeleteMapping("/{idString}")
+  public ResponseEntity<?> deleteCapacity(@PathVariable @NotBlank(message = "Id is required.") String idString,
+      UsernamePasswordAuthenticationToken auth) {
+    Integer id;
+    try {
+      id = Integer.parseInt(idString);
+    } catch (NumberFormatException e) {
+      return ResponseEntity.status(406).body(new ErrorDTO("Id must be an integer"));
+    }
+
+    User user = ((User) auth.getPrincipal());
+    try {
+      capacityService.deleteCapacityById(id, user);
+      return ResponseEntity.ok().body("Capacity with id " + id + " has been deleted successfully.");
+    } catch (IdNotFoundException | IllegalArgumentException e) {
+      return ResponseEntity.status(406).body(new ErrorDTO(e.getMessage()));
+    }
+  }
+
+
+
+
 
 }

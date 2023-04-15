@@ -49,7 +49,7 @@ public class LoginServiceImpl implements LoginService {
     if (!loginDTO.getUserType().toUpperCase().equals(UserType.SUPPLIER.toString())
         && !loginDTO.getUserType().toUpperCase().equals(
         UserType.CONSUMER.toString())) {
-      throw new InvalidUserTypeException("Invalid usertype.");
+      throw new InvalidUserTypeException();
     }
 
   }
