@@ -104,7 +104,7 @@ public class JwtFilter extends OncePerRequestFilter {
   @Override
   protected boolean shouldNotFilter(HttpServletRequest request) {
     String reqPath = request.getServletPath();
-    return (!reqPath.startsWith("/supplier") && !reqPath.equals("/consumer"));
+    return (!reqPath.startsWith("/supplier") && !reqPath.startsWith("/consumer"));
   }
 
 }

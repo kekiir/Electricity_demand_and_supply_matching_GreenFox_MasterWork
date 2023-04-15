@@ -1,4 +1,4 @@
-package com.gfa.powertrade.capacity.models;
+package com.gfa.powertrade.demand.models;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -6,12 +6,10 @@ import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
-public class CapacityUpdatedResponseDTO {
-
+public class DemandResponseDTO {
   private Integer id;
-  private String energySource;
   private Double amountMW;
-  private Double available;
+  private Double covered;
   private Double price;
   private LocalDateTime from;
   private LocalDateTime to;

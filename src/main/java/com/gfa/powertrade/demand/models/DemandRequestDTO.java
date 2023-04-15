@@ -1,14 +1,10 @@
-package com.gfa.powertrade.capacity.models;
+package com.gfa.powertrade.demand.models;
 
 import lombok.Data;
-import org.springframework.format.annotation.DateTimeFormat;
 import javax.validation.constraints.*;
-import java.time.LocalDateTime;
 
 @Data
-public class CapacityRequestDTO {
-  @NotBlank(message = "energySource: Energy source is required.")
-  private String energySource;
+public class DemandRequestDTO {
   @NotNull(message = "amountMW: Amount is required.")
   @DecimalMin(value = "0.001", message = "amountMW: Amount have to be more then 0.001 MW.")
   private Double amountMW;

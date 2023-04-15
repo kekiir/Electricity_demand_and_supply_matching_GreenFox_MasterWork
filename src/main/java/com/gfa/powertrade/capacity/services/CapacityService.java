@@ -9,6 +9,8 @@ public interface CapacityService {
 
   void deleteCapacityById(Integer id, User user);
 
-  CapacityUpdatedResponseDTO updateCapacityById(CapacityUpdateRequestDTO capacityUpdateRequestDTO, User user);
+  CapacityResponseDTO updateCapacity(CapacityUpdateRequestDTO capacityUpdateRequestDTO, User user);
+
+  CapacityListResponseDTO getCapacitesBySupplier(User user);
 
 }

@@ -18,4 +18,26 @@ public class TimeService {
     return LocalDateTime.ofInstant(Instant.ofEpochMilli(time), ZoneId.systemDefault());
   }
 
+  public void validateGivenDates(String fromString, String toString) {
+    LocalDateTime from;
+    LocalDateTime to;
+    LocalDateTime tomorrow = LocalDateTime.now().plusDays(1);
+    try {
+      from = LocalDateTime.parse(fromString);
+    } catch (DateTimeException e) {
+      throw new IllegalArgumentException("Invalid 'from' date");
+    }
+    try {
+      to = LocalDateTime.parse(toString);
+    } catch (DateTimeException e) {
+      throw new IllegalArgumentException("Invalid 'to' date");
+    }
+    if (!from.isAfter(tomorrow) || !to.isAfter(tomorrow)) {
+      throw new IllegalArgumentException("Dates accepted from 24h ahead.");
+    }
+    if (from.isAfter(to)) {
+      throw new IllegalArgumentException("'From' date have to be earlier than 'to' date.");
+    }
+  }
+
 }

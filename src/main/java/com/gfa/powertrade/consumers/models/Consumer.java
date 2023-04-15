@@ -3,6 +3,8 @@ package com.gfa.powertrade.consumers.models;
 import com.gfa.powertrade.user.models.User;
 import com.gfa.powertrade.demand.models.Demand;
 import lombok.*;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import javax.persistence.*;
 import java.util.List;
 
@@ -21,5 +23,6 @@ public class Consumer extends User {
   private String username;
   private String password;
   @OneToMany(mappedBy = "consumer", cascade = CascadeType.ALL)
+  @LazyCollection(LazyCollectionOption.FALSE)
   private List<Demand> demandList;
 }

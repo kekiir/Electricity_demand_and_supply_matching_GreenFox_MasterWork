@@ -16,15 +16,11 @@ public class CapacityUpdateRequestDTO {
   @NotNull(message = "Price is required.")
   private Double price;
 
-  //@DateTimeFormat(pattern = "yyyy-MM-dd'T'HH")
-  // @Future(message = "Date must be in the future")
   @NotBlank(message = "from: 'From' date is requered.")
   @Pattern(regexp = "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0]{2}$", message = "from: Required date pattern: " +
       "yyyy-MM-dd'T'HH:00")
   private String from;
 
-  //@DateTimeFormat(pattern = "yyyy-MM-dd'T'HH")
-  //@Future(message = "Date must be in the future")
   @NotBlank(message = "to: 'To' date is requered.")
   @Pattern(regexp = "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0]{2}$", message = "to: Required date pattern: " +
       "yyyy-MM-dd'T'HH:00")

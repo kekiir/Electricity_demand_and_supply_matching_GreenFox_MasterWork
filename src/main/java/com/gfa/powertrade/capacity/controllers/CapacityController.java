@@ -32,20 +32,18 @@ public class CapacityController {
 
   }
 
-
   @PutMapping("")
-  public ResponseEntity<?> updateCapacity( @Valid @RequestBody CapacityUpdateRequestDTO capacityUpdateRequestDTO,
+  public ResponseEntity<?> updateCapacity(@Valid @RequestBody CapacityUpdateRequestDTO capacityUpdateRequestDTO,
       UsernamePasswordAuthenticationToken auth) {
-
     User user = ((User) auth.getPrincipal());
     try {
-      return ResponseEntity.ok().body(capacityService.updateCapacityById(capacityUpdateRequestDTO, user));
-    } catch (IdNotFoundException | IllegalArgumentException | ForbiddenActionException | ContractedCapacityException e) {
+      return ResponseEntity.ok().body(capacityService.updateCapacity(capacityUpdateRequestDTO, user));
+    } catch (IdNotFoundException | IllegalArgumentException | ForbiddenActionException |
+             ContractedCapacityException e) {
       return ResponseEntity.status(406).body(new ErrorDTO(e.getMessage()));
     }
 
   }
-
 
   @DeleteMapping("/{idString}")
   public ResponseEntity<?> deleteCapacity(@PathVariable @NotBlank(message = "Id is required.") String idString,
@@ -56,7 +54,6 @@ public class CapacityController {
     } catch (NumberFormatException e) {
       return ResponseEntity.status(406).body(new ErrorDTO("Id must be an integer"));
     }
-
     User user = ((User) auth.getPrincipal());
     try {
       capacityService.deleteCapacityById(id, user);
@@ -66,8 +63,14 @@ public class CapacityController {
     }
   }
 
-
-
-
+  @GetMapping("")
+  public ResponseEntity<?> getCapacities(UsernamePasswordAuthenticationToken auth) {
+    User user = ((User) auth.getPrincipal());
+    try {
+      return ResponseEntity.ok(capacityService.getCapacitesBySupplier(user));
+    } catch (ForbiddenActionException e) {
+      return ResponseEntity.status(406).body(new ErrorDTO(e.getMessage()));
+    }
+  }
 
 }
