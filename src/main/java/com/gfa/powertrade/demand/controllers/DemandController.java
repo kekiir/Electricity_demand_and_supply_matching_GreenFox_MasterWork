@@ -32,7 +32,6 @@ public class DemandController {
 
   }
 
-
   @PutMapping("")
   public ResponseEntity<?> updateDemand( @Valid @RequestBody DemandUpdateRequestDTO demandUpdateRequestDTO,
       UsernamePasswordAuthenticationToken auth) {

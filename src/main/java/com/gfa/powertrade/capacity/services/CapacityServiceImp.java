@@ -6,6 +6,9 @@ import com.gfa.powertrade.common.exceptions.*;
 import com.gfa.powertrade.common.models.TimeRange;
 import com.gfa.powertrade.common.models.TimeRangeRepository;
 import com.gfa.powertrade.common.services.TimeService;
+import com.gfa.powertrade.demand.models.DemandListResponseDTO;
+import com.gfa.powertrade.demand.repositories.DemandRepository;
+import com.gfa.powertrade.demand.services.DemandServiceImp;
 import com.gfa.powertrade.supplier.models.Supplier;
 import com.gfa.powertrade.supplier.repository.SupplierRepository;
 import com.gfa.powertrade.user.models.User;
@@ -24,6 +27,20 @@ public class CapacityServiceImp implements CapacityService {
   private TimeService timeService;
   private CapacityRepository capacityRepository;
   private TimeRangeRepository timeRangeRepository;
+  private DemandRepository demandRepository;
+  private DemandServiceImp demandService;
+
+  public DemandListResponseDTO findDemandsForCapacity(int id, User user) {
+    Supplier supplier = validateUsertype(user);
+    Long from = capacityRepository.findById(id).get().getTimeRange().getFrom();
+    Long to = capacityRepository.findById(id).get().getTimeRange().getTo();
+
+    return new DemandListResponseDTO(demandRepository.findAll().stream()
+        .filter(demand -> demand.getTimeRange().getTo() > from)
+        .filter(demand -> demand.getTimeRange().getFrom() < to)
+        .map(d -> demandService.convert(d))
+        .collect(Collectors.toList()));
+  }
 
   @Override
   public void deleteCapacityById(Integer id, User user) throws IdNotFoundException, IllegalArgumentException,

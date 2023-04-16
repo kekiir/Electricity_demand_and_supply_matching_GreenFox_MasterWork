@@ -1,9 +1,13 @@
 package com.gfa.powertrade.capacity.controllers;
 
 import com.gfa.powertrade.capacity.models.*;
+import com.gfa.powertrade.capacity.repositories.CapacityRepository;
 import com.gfa.powertrade.capacity.services.CapacityService;
 import com.gfa.powertrade.common.exceptions.*;
 import com.gfa.powertrade.common.models.ErrorDTO;
+import com.gfa.powertrade.demand.models.Demand;
+import com.gfa.powertrade.demand.repositories.DemandRepository;
+import com.gfa.powertrade.supplier.models.Supplier;
 import com.gfa.powertrade.user.models.User;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +15,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @RestController
@@ -18,6 +24,13 @@ import javax.validation.constraints.NotBlank;
 public class CapacityController {
 
   private CapacityService capacityService;
+
+  @GetMapping("/demands/{id}")
+  public ResponseEntity<?> findDemands(@PathVariable int id,
+      UsernamePasswordAuthenticationToken auth) {
+    User user = ((User) auth.getPrincipal());
+    return ResponseEntity.ok().body(capacityService.findDemandsForCapacity(id, user));
+  }
 
   @PostMapping
   public ResponseEntity<?> createCapacity(@Valid @RequestBody CapacityRequestDTO capacityRequestDto,
