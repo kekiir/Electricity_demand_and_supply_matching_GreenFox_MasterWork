@@ -15,6 +15,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,11 +26,21 @@ public class CapacityController {
 
   private CapacityService capacityService;
 
-  @GetMapping("/demands/{id}")
-  public ResponseEntity<?> findDemands(@PathVariable int id,
+  @GetMapping("/demands/{idString}")
+  public ResponseEntity<?> findDemands( @PathVariable String idString,
       UsernamePasswordAuthenticationToken auth) {
+    Integer id;
+    try {
+      id = Integer.parseInt(idString);
+    } catch (NumberFormatException e) {
+      return ResponseEntity.status(406).body(new ErrorDTO("Id must be an integer"));
+    }
     User user = ((User) auth.getPrincipal());
+    try {
     return ResponseEntity.ok().body(capacityService.findDemandsForCapacity(id, user));
+    }catch ( ForbiddenActionException e) {
+      return ResponseEntity.status(406).body(new ErrorDTO(e.getMessage()));
+    }
   }
 
   @PostMapping

@@ -15,4 +15,6 @@ public interface DemandService {
 
   public DemandListResponseDTO getDemandsByConsumer(User user);
 
+  Object findCapacitiesForDemand(Integer id, User user);
+
 }

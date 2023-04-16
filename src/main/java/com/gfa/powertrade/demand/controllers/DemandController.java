@@ -19,6 +19,25 @@ public class DemandController {
 
   private DemandService demandService;
 
+  @GetMapping("/capacities/{idString}")
+  public ResponseEntity<?> findDemands( @PathVariable String idString,
+      UsernamePasswordAuthenticationToken auth) {
+    Integer id;
+    try {
+      id = Integer.parseInt(idString);
+    } catch (NumberFormatException e) {
+      return ResponseEntity.status(406).body(new ErrorDTO("Id must be an integer"));
+    }
+    User user = ((User) auth.getPrincipal());
+    try {
+      return ResponseEntity.ok().body(demandService.findCapacitiesForDemand(id, user));
+    } catch ( ForbiddenActionException e) {
+      return ResponseEntity.status(406).body(new ErrorDTO(e.getMessage()));
+    }
+  }
+
+
+
   @PostMapping
   public ResponseEntity<?> createDemand(@Valid @RequestBody DemandRequestDTO demandRequestDTO,
       UsernamePasswordAuthenticationToken auth) {

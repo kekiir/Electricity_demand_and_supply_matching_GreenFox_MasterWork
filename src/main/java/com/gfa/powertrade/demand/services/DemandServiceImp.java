@@ -1,8 +1,12 @@
 package com.gfa.powertrade.demand.services;
 
+import com.gfa.powertrade.capacity.models.CapacityListResponseDTO;
+import com.gfa.powertrade.capacity.repositories.CapacityRepository;
+import com.gfa.powertrade.capacity.services.CapacityServiceImp;
 import com.gfa.powertrade.common.exceptions.*;
 import com.gfa.powertrade.common.models.TimeRange;
 import com.gfa.powertrade.common.models.TimeRangeRepository;
+import com.gfa.powertrade.common.services.ConverterService;
 import com.gfa.powertrade.common.services.TimeService;
 import com.gfa.powertrade.consumers.models.Consumer;
 import com.gfa.powertrade.consumers.repositories.ConsumerRepository;
@@ -24,6 +28,22 @@ public class DemandServiceImp implements DemandService {
   private TimeService timeService;
   private DemandRepository demandRepository;
   private TimeRangeRepository timeRangeRepository;
+  private CapacityRepository capacityRepository;
+  private ConverterService converterService;
+
+
+  @Override
+  public Object findCapacitiesForDemand(Integer id, User user) {
+    Consumer consumer = validateUsertype(user);
+    Long from = demandRepository.findById(id).get().getTimeRange().getFrom();
+    Long to = demandRepository.findById(id).get().getTimeRange().getTo();
+
+    return new CapacityListResponseDTO(capacityRepository.findAll().stream()
+        .filter(c -> c.getTimeRange().getTo() > from)
+        .filter(c -> c.getTimeRange().getFrom() < to)
+        .map(c -> converterService.convertCapacityToResponseDTO(c))
+        .collect(Collectors.toList()));
+  }
 
   @Override
   public void deleteDemendById(Integer id, User user) throws IdNotFoundException, IllegalArgumentException,
@@ -45,7 +65,7 @@ public class DemandServiceImp implements DemandService {
     demandBelongsToConsumer(demand, consumer.getId());
     timeService.validateGivenDates(demandUpdateRequestDTO.getFrom(), demandUpdateRequestDTO.getTo());
     updataDemand(demandUpdateRequestDTO, demand);
-    return convertTOUpdatedResponseDTO(demandRepository.save(demand));
+    return converterService.convertDemandToResponseDTO(demandRepository.save(demand));
   }
 
   private void updataDemand(DemandUpdateRequestDTO demandUpdateRequestDTO, Demand demand) {
@@ -64,12 +84,7 @@ public class DemandServiceImp implements DemandService {
     timeRangeRepository.save(demand.getTimeRange());
   }
 
-  private DemandResponseDTO convertTOUpdatedResponseDTO(Demand demand) {
-    return new DemandResponseDTO(demand.getId(),
-        demand.getAmount(), demand.getCovered(), demand.getPrice(),
-        timeService.longToLocalDateTime(demand.getTimeRange().getFrom()),
-        timeService.longToLocalDateTime(demand.getTimeRange().getTo()));
-  }
+
 
   private void demandBelongsToConsumer(Demand demand, Integer userId) throws ForbiddenActionException {
     if (userId != demand.getConsumer().getId())
@@ -83,7 +98,7 @@ public class DemandServiceImp implements DemandService {
     timeService.validateGivenDates(demandRequestDTO.getFrom(), demandRequestDTO.getTo());
     Demand demand = setDemandVariables(demandRequestDTO, user);
 
-    return convert(demandRepository.save(demand));
+    return converterService.convertDemandToResponseDTO(demandRepository.save(demand));
   }
 
   private Demand setDemandVariables(DemandRequestDTO demandRequestDTO, User user) {
@@ -108,27 +123,14 @@ public class DemandServiceImp implements DemandService {
 
   }
 
-  public DemandResponseDTO convert(Demand demand) {
-    return new DemandResponseDTO(demand.getId(), demand.getAmount(),
-        demand.getCovered(), demand.getPrice(),
-        timeService.longToLocalDateTime(demand.getTimeRange().getFrom()),
-        timeService.longToLocalDateTime(demand.getTimeRange().getTo()));
-  }
 
   @Override
   public DemandListResponseDTO getDemandsByConsumer(User user) {
     Consumer consumer = validateUsertype(user);
 
-    return convertToDemandDTOList(consumer.getDemandList());
+    return converterService.convertDemandToDemandListDTO(consumer.getDemandList());
   }
 
-  private DemandListResponseDTO convertToDemandDTOList(List<Demand> demandList) {
-    List<DemandResponseDTO> list = demandList.stream()
-        .map(this::convert)
-        .collect(Collectors.toList());
-
-    return new DemandListResponseDTO(list);
-  }
 
   public Consumer validateUsertype(User user) throws ForbiddenActionException {
     Consumer consumer;

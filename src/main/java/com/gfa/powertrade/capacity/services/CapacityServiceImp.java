@@ -5,6 +5,7 @@ import com.gfa.powertrade.capacity.repositories.CapacityRepository;
 import com.gfa.powertrade.common.exceptions.*;
 import com.gfa.powertrade.common.models.TimeRange;
 import com.gfa.powertrade.common.models.TimeRangeRepository;
+import com.gfa.powertrade.common.services.ConverterService;
 import com.gfa.powertrade.common.services.TimeService;
 import com.gfa.powertrade.demand.models.DemandListResponseDTO;
 import com.gfa.powertrade.demand.repositories.DemandRepository;
@@ -28,7 +29,7 @@ public class CapacityServiceImp implements CapacityService {
   private CapacityRepository capacityRepository;
   private TimeRangeRepository timeRangeRepository;
   private DemandRepository demandRepository;
-  private DemandServiceImp demandService;
+  private ConverterService converterService;
 
   public DemandListResponseDTO findDemandsForCapacity(int id, User user) {
     Supplier supplier = validateUsertype(user);
@@ -38,7 +39,7 @@ public class CapacityServiceImp implements CapacityService {
     return new DemandListResponseDTO(demandRepository.findAll().stream()
         .filter(demand -> demand.getTimeRange().getTo() > from)
         .filter(demand -> demand.getTimeRange().getFrom() < to)
-        .map(d -> demandService.convert(d))
+        .map(d -> converterService.convertDemandToResponseDTO(d))
         .collect(Collectors.toList()));
   }
 
@@ -63,7 +64,7 @@ public class CapacityServiceImp implements CapacityService {
     capacityBelongsToSupplier(capacity, supplier.getId());
     timeService.validateGivenDates(capacityUpdateRequestDTO.getFrom(), capacityUpdateRequestDTO.getTo());
     updataCapacity(capacityUpdateRequestDTO, capacity);
-    return convertTOUpdatedResponseDTO(capacityRepository.save(capacity));
+    return converterService.convertCapacityToResponseDTO(capacityRepository.save(capacity));
   }
 
   private void updataCapacity(CapacityUpdateRequestDTO capacityUpdateRequestDTO, Capacity capacity) {
@@ -83,12 +84,7 @@ public class CapacityServiceImp implements CapacityService {
     timeRangeRepository.save(capacity.getTimeRange());
   }
 
-  private CapacityResponseDTO convertTOUpdatedResponseDTO(Capacity capacity) {
-    return new CapacityResponseDTO(capacity.getId(), capacity.getEnergySource().toString(),
-        capacity.getAmount(), capacity.getAvailable(), capacity.getPrice(),
-        timeService.longToLocalDateTime(capacity.getTimeRange().getFrom()),
-        timeService.longToLocalDateTime(capacity.getTimeRange().getTo()));
-  }
+
 
   private void capacityBelongsToSupplier(Capacity capacity, Integer userId) throws ForbiddenActionException {
     if (userId != capacity.getSupplier().getId())
@@ -103,7 +99,7 @@ public class CapacityServiceImp implements CapacityService {
     checkCorrectEnergySource(capacityRequestDTO.getEnergySource());
     Capacity capacity = setCapacityVariables(capacityRequestDTO, user);
 
-    return convert(capacityRepository.save(capacity));
+    return converterService.convertCapacityToResponseDTO(capacityRepository.save(capacity));
   }
 
   public Capacity setCapacityVariables(CapacityRequestDTO capacityRequestDTO, User user) {
@@ -141,16 +137,9 @@ public class CapacityServiceImp implements CapacityService {
   public CapacityListResponseDTO getCapacitesBySupplier(User user) {
     Supplier supplier = validateUsertype(user);
 
-    return convertToCapacityDTOList(supplier.getCapacityList());
+    return converterService.convertCapacityToCapacityListDTO(supplier.getCapacityList());
   }
 
-  private CapacityListResponseDTO convertToCapacityDTOList(List<Capacity> capacityList) {
-    List<CapacityResponseDTO> list = capacityList.stream()
-        .map(this::convert)
-        .collect(Collectors.toList());
-
-    return new CapacityListResponseDTO(list);
-  }
 
   public Supplier validateUsertype(User user) throws ForbiddenActionException {
     Supplier supplier;
