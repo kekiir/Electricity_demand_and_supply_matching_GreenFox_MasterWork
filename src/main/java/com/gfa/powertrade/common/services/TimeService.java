@@ -14,6 +14,7 @@ public interface TimeService {
 
   public LocalDateTime validateDateFormat(String date);
 
-  public void validateDateRange(LocalDateTime from, LocalDateTime to, LocalDateTime afterTomorrowMidnight);
+  public void validateDateRange(LocalDateTime from, LocalDateTime to, LocalDateTime closeTime, LocalDateTime openTime)
+      throws IllegalArgumentException;
 
 }

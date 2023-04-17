@@ -12,6 +12,7 @@ import com.gfa.powertrade.demand.repositories.DemandRepository;
 import com.gfa.powertrade.supplier.models.Supplier;
 import com.gfa.powertrade.supplier.repository.SupplierRepository;
 import com.gfa.powertrade.user.models.User;
+import com.gfa.powertrade.user.services.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
@@ -28,9 +29,10 @@ public class CapacityServiceImp implements CapacityService {
   private TimeRangeRepository timeRangeRepository;
   private DemandRepository demandRepository;
   private ConverterService converterService;
+  private UserService userService;
 
   public DemandListResponseDTO findDemandsForCapacity(int id, User user) {
-    Supplier supplier = validateUsertype(user);
+    userService.validateSuppliertype(user);
     Long from = capacityRepository.findById(id).get().getTimeRange().getFrom();
     Long to = capacityRepository.findById(id).get().getTimeRange().getTo();
 
@@ -44,7 +46,7 @@ public class CapacityServiceImp implements CapacityService {
   @Override
   public void deleteCapacityById(Integer id, User user) throws IdNotFoundException, IllegalArgumentException,
       ForbiddenActionException {
-    Supplier supplier = validateUsertype(user);
+    Supplier supplier = userService.validateSuppliertype(user);
 
     Capacity capacity = capacityRepository.findById(id)
         .orElseThrow(() -> new IdNotFoundException());
@@ -55,7 +57,7 @@ public class CapacityServiceImp implements CapacityService {
 
   @Override
   public CapacityResponseDTO updateCapacity(CapacityUpdateRequestDTO capacityUpdateRequestDTO, User user) {
-    Supplier supplier = validateUsertype(user);
+    Supplier supplier = userService.validateSuppliertype(user);
     checkCorrectEnergySource(capacityUpdateRequestDTO.getEnergySource());
     Capacity capacity = capacityRepository.findById(capacityUpdateRequestDTO.getId())
         .orElseThrow(() -> new IdNotFoundException());
@@ -82,8 +84,6 @@ public class CapacityServiceImp implements CapacityService {
     timeRangeRepository.save(capacity.getTimeRange());
   }
 
-
-
   private void capacityBelongsToSupplier(Capacity capacity, Integer userId) throws ForbiddenActionException {
     if (userId != capacity.getSupplier().getId())
       throw new ForbiddenActionException();
@@ -92,7 +92,7 @@ public class CapacityServiceImp implements CapacityService {
   @Override
   public CapacityResponseDTO createCapacity(User user, CapacityRequestDTO capacityRequestDTO) throws
       ForbiddenActionException, IllegalArgumentException, InvalidEnergySourceException {
-    validateUsertype(user);
+    userService.validateSuppliertype(user);
     timeService.validateGivenDates(capacityRequestDTO.getFrom(), capacityRequestDTO.getTo());
     checkCorrectEnergySource(capacityRequestDTO.getEnergySource());
     Capacity capacity = setCapacityVariables(capacityRequestDTO, user);
@@ -124,28 +124,12 @@ public class CapacityServiceImp implements CapacityService {
 
   }
 
-  public CapacityResponseDTO convert(Capacity capacity) {
-    return new CapacityResponseDTO(capacity.getId(), capacity.getEnergySource().toString(), capacity.getAmount(),
-        capacity.getAvailable(), capacity.getPrice(),
-        timeService.longToLocalDateTime(capacity.getTimeRange().getFrom()),
-        timeService.longToLocalDateTime(capacity.getTimeRange().getTo()));
-  }
 
   @Override
   public CapacityListResponseDTO getCapacitesBySupplier(User user) {
-    Supplier supplier = validateUsertype(user);
+    Supplier supplier = userService.validateSuppliertype(user);
 
     return converterService.convertCapacityToCapacityListDTO(supplier.getCapacityList());
-  }
-
-
-  public Supplier validateUsertype(User user) throws ForbiddenActionException {
-    Supplier supplier;
-    try {
-      return supplier = (Supplier) user;
-    } catch (RuntimeException e) {
-      throw new ForbiddenActionException();
-    }
   }
 
   public void checkCorrectEnergySource(String energySource) throws InvalidEnergySourceException {

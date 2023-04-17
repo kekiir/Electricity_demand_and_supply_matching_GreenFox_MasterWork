@@ -1,7 +1,11 @@
 package com.gfa.powertrade.user.services;
 
+import com.gfa.powertrade.common.exceptions.ForbiddenActionException;
+import com.gfa.powertrade.consumers.models.Consumer;
 import com.gfa.powertrade.consumers.repositories.ConsumerRepository;
+import com.gfa.powertrade.login.exceptions.LoginFailureException;
 import com.gfa.powertrade.registration.models.UserType;
+import com.gfa.powertrade.supplier.models.Supplier;
 import com.gfa.powertrade.supplier.repository.SupplierRepository;
 import com.gfa.powertrade.user.models.User;
 import lombok.AllArgsConstructor;
@@ -11,7 +15,6 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
-@NoArgsConstructor
 public class UserServiceImp implements UserService {
 
   private ConsumerRepository consumerRepository;
@@ -26,14 +29,33 @@ public class UserServiceImp implements UserService {
         supplier.setUserType(UserType.SUPPLIER);
         return Optional.of(supplier);
       } else
-        return Optional.empty();
+        throw new LoginFailureException();
     } else {
       if (consumerRepository.findByUsername(username).isPresent()) {
         User consumer = consumerRepository.findByUsername(username).get();
         consumer.setUserType(UserType.CONSUMER);
         return Optional.of(consumer);
       } else
-        return Optional.empty();
+        throw new LoginFailureException();
+    }
+  }
+
+  public Supplier validateSuppliertype(User user) throws ForbiddenActionException {
+    Supplier supplier;
+    try {
+      return supplier = (Supplier) user;
+    } catch (RuntimeException e) {
+      throw new ForbiddenActionException();
+    }
+
+  }
+
+  public Consumer validateConsumertype(User user) throws ForbiddenActionException {
+    Consumer consumer;
+    try {
+      return consumer = (Consumer) user;
+    } catch (RuntimeException e) {
+      throw new ForbiddenActionException();
     }
   }
 

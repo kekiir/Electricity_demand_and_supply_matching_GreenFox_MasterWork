@@ -13,6 +13,7 @@ import com.gfa.powertrade.consumers.repositories.ConsumerRepository;
 import com.gfa.powertrade.demand.models.*;
 import com.gfa.powertrade.demand.repositories.DemandRepository;
 import com.gfa.powertrade.user.models.User;
+import com.gfa.powertrade.user.services.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
@@ -30,11 +31,12 @@ public class DemandServiceImp implements DemandService {
   private TimeRangeRepository timeRangeRepository;
   private CapacityRepository capacityRepository;
   private ConverterService converterService;
+  private UserService userService;
 
 
   @Override
   public Object findCapacitiesForDemand(Integer id, User user) {
-    Consumer consumer = validateUsertype(user);
+    Consumer consumer = userService.validateConsumertype(user);
     Long from = demandRepository.findById(id).get().getTimeRange().getFrom();
     Long to = demandRepository.findById(id).get().getTimeRange().getTo();
 
@@ -49,7 +51,7 @@ public class DemandServiceImp implements DemandService {
   @Override
   public void deleteDemendById(Integer id, User user) throws IdNotFoundException, IllegalArgumentException,
       ForbiddenActionException {
-    Consumer consumer = validateUsertype(user);
+    Consumer consumer = userService.validateConsumertype(user);
 
     Demand demand = demandRepository.findById(id)
         .orElseThrow(() -> new IdNotFoundException());
@@ -60,7 +62,7 @@ public class DemandServiceImp implements DemandService {
 
   @Override
   public Object updateDemand(DemandUpdateRequestDTO demandUpdateRequestDTO, User user) {
-    Consumer consumer = validateUsertype(user);
+    Consumer consumer = userService.validateConsumertype(user);
     Demand demand = demandRepository.findById(demandUpdateRequestDTO.getId())
         .orElseThrow(() -> new IdNotFoundException());
     demandBelongsToConsumer(demand, consumer.getId());
@@ -95,7 +97,7 @@ public class DemandServiceImp implements DemandService {
   @Override
   public DemandResponseDTO createDemand(User user, DemandRequestDTO demandRequestDTO) throws
       ForbiddenActionException, IllegalArgumentException, InvalidEnergySourceException {
-    validateUsertype(user);
+    userService.validateConsumertype(user);
     timeService.validateGivenDates(demandRequestDTO.getFrom(), demandRequestDTO.getTo());
     Demand demand = setDemandVariables(demandRequestDTO, user);
 
@@ -127,13 +129,13 @@ public class DemandServiceImp implements DemandService {
 
   @Override
   public DemandListResponseDTO getDemandsByConsumer(User user) {
-    Consumer consumer = validateUsertype(user);
+    Consumer consumer = userService.validateConsumertype(user);
 
     return converterService.convertDemandToDemandListDTO(consumer.getDemandList());
   }
 
 
-  public Consumer validateUsertype(User user) throws ForbiddenActionException {
+  public Consumer validateConsumertype(User user) throws ForbiddenActionException {
     Consumer consumer;
     try {
       return consumer = (Consumer) user;
