@@ -1,13 +1,9 @@
 package com.gfa.powertrade.capacity.controllers;
 
 import com.gfa.powertrade.capacity.models.*;
-import com.gfa.powertrade.capacity.repositories.CapacityRepository;
 import com.gfa.powertrade.capacity.services.CapacityService;
 import com.gfa.powertrade.common.exceptions.*;
 import com.gfa.powertrade.common.models.ErrorDTO;
-import com.gfa.powertrade.demand.models.Demand;
-import com.gfa.powertrade.demand.repositories.DemandRepository;
-import com.gfa.powertrade.supplier.models.Supplier;
 import com.gfa.powertrade.user.models.User;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +11,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @RestController
@@ -27,7 +20,7 @@ public class CapacityController {
   private CapacityService capacityService;
 
   @GetMapping("/demands/{idString}")
-  public ResponseEntity<?> findDemands( @PathVariable String idString,
+  public ResponseEntity<?> findDemands(@PathVariable String idString,
       UsernamePasswordAuthenticationToken auth) {
     Integer id;
     try {
@@ -37,8 +30,8 @@ public class CapacityController {
     }
     User user = ((User) auth.getPrincipal());
     try {
-    return ResponseEntity.ok().body(capacityService.findDemandsForCapacity(id, user));
-    }catch ( ForbiddenActionException e) {
+      return ResponseEntity.ok().body(capacityService.findDemandsForCapacity(id, user));
+    } catch (ForbiddenActionException e) {
       return ResponseEntity.status(406).body(new ErrorDTO(e.getMessage()));
     }
   }
@@ -62,8 +55,8 @@ public class CapacityController {
     User user = ((User) auth.getPrincipal());
     try {
       return ResponseEntity.ok().body(capacityService.updateCapacity(capacityUpdateRequestDTO, user));
-    } catch (IdNotFoundException | IllegalArgumentException | ForbiddenActionException |
-             ContractedCapacityException e) {
+    } catch (IdNotFoundException | IllegalArgumentException | ForbiddenActionException
+             | ContractedCapacityException e) {
       return ResponseEntity.status(406).body(new ErrorDTO(e.getMessage()));
     }
 

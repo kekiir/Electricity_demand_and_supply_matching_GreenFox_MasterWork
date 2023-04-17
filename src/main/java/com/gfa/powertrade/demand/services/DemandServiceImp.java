@@ -3,12 +3,11 @@ package com.gfa.powertrade.demand.services;
 import com.gfa.powertrade.capacity.models.Capacity;
 import com.gfa.powertrade.capacity.models.CapacityListResponseDTO;
 import com.gfa.powertrade.capacity.repositories.CapacityRepository;
-import com.gfa.powertrade.capacity.services.CapacityServiceImp;
 import com.gfa.powertrade.common.exceptions.*;
 import com.gfa.powertrade.common.models.TimeRange;
 import com.gfa.powertrade.common.models.TimeRangeRepository;
 import com.gfa.powertrade.common.services.ConverterService;
-import com.gfa.powertrade.common.services.TimeService;
+import com.gfa.powertrade.common.services.TimeServiceImp;
 import com.gfa.powertrade.consumers.models.Consumer;
 import com.gfa.powertrade.consumers.repositories.ConsumerRepository;
 import com.gfa.powertrade.demand.models.*;
@@ -26,7 +25,7 @@ import java.util.stream.Collectors;
 public class DemandServiceImp implements DemandService {
 
   private ConsumerRepository consumerRepository;
-  private TimeService timeService;
+  private TimeServiceImp timeService;
   private DemandRepository demandRepository;
   private TimeRangeRepository timeRangeRepository;
   private CapacityRepository capacityRepository;

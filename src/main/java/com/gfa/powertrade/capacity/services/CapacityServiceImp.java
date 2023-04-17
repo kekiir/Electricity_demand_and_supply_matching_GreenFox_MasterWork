@@ -6,10 +6,9 @@ import com.gfa.powertrade.common.exceptions.*;
 import com.gfa.powertrade.common.models.TimeRange;
 import com.gfa.powertrade.common.models.TimeRangeRepository;
 import com.gfa.powertrade.common.services.ConverterService;
-import com.gfa.powertrade.common.services.TimeService;
+import com.gfa.powertrade.common.services.TimeServiceImp;
 import com.gfa.powertrade.demand.models.DemandListResponseDTO;
 import com.gfa.powertrade.demand.repositories.DemandRepository;
-import com.gfa.powertrade.demand.services.DemandServiceImp;
 import com.gfa.powertrade.supplier.models.Supplier;
 import com.gfa.powertrade.supplier.repository.SupplierRepository;
 import com.gfa.powertrade.user.models.User;
@@ -17,7 +16,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,7 +23,7 @@ import java.util.stream.Collectors;
 public class CapacityServiceImp implements CapacityService {
 
   private SupplierRepository supplierRepository;
-  private TimeService timeService;
+  private TimeServiceImp timeService;
   private CapacityRepository capacityRepository;
   private TimeRangeRepository timeRangeRepository;
   private DemandRepository demandRepository;

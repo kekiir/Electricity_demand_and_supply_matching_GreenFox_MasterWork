@@ -23,13 +23,12 @@ public class RegistrationController {
   public ResponseEntity<?> register(@Valid @RequestBody RegistrationRequestDTO registrationRequestDTO) {
 
     try {
-      RegistrationResponseDTO createdUser = registrationService.saveNewUser(
-          registrationRequestDTO);
+      RegistrationResponseDTO createdUser = registrationService.saveNewUser(registrationRequestDTO);
       return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     } catch (AlreadyTakenUsernameException e) {
-      return ResponseEntity.status(409).body(new ErrorDTO (e.getMessage()));
+      return ResponseEntity.status(409).body(new ErrorDTO(e.getMessage()));
     } catch (InvalidPasswordException | InvalidUserTypeException e) {
-      return ResponseEntity.status(406).body(new ErrorDTO (e.getMessage()));
+      return ResponseEntity.status(406).body(new ErrorDTO(e.getMessage()));
     }
 
   }

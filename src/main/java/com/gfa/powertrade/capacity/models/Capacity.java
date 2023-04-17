@@ -3,7 +3,6 @@ package com.gfa.powertrade.capacity.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.gfa.powertrade.common.exceptions.ContractedCapacityException;
 import com.gfa.powertrade.common.models.TimeRange;
-
 import com.gfa.powertrade.contract.models.Contract;
 import com.gfa.powertrade.supplier.models.Supplier;
 import lombok.*;
@@ -28,7 +27,8 @@ public class Capacity {
   private Integer id;
 
   @Enumerated(EnumType.STRING)
-  @Column(name = "energy_source", columnDefinition = "ENUM('COAL','GAS','NUCLEAR','HYDRO','WIND','SOLAR','BIO','WASTE')")
+  @Column(name = "energy_source",
+      columnDefinition = "ENUM('COAL','GAS','NUCLEAR','HYDRO','WIND','SOLAR','BIO','WASTE')")
   private EnergySource energySource;
   private Double amount;
   private Double available;
@@ -45,7 +45,8 @@ public class Capacity {
 
   public void setAmount(Double newAmount) {
     Double contractedAmount = amount - available;
-    if (this.amount - this.available > newAmount) throw new ContractedCapacityException();
+    if (this.amount - this.available > newAmount)
+      throw new ContractedCapacityException();
     double oldAmount = amount;
     this.amount = newAmount;
     this.setAvailable(available - (oldAmount - newAmount));
@@ -53,8 +54,10 @@ public class Capacity {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
     Capacity capacity = (Capacity) o;
     return Objects.equals(id, capacity.id) && energySource == capacity.energySource && Objects.equals(amount,
         capacity.amount) && Objects.equals(available, capacity.available) && Objects.equals(timeRange,

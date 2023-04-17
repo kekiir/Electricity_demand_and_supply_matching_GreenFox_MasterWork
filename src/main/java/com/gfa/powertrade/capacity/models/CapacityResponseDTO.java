@@ -8,12 +8,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class CapacityResponseDTO {
 
-    private Integer id;
-    private String energySource;
-    private Double amountMW;
-    private Double available;
-    private Double price;
-    private LocalDateTime from;
-    private LocalDateTime to;
+  private Integer id;
+  private String energySource;
+  private Double amountMW;
+  private Double available;
+  private Double price;
+  private LocalDateTime from;
+  private LocalDateTime to;
 
 }

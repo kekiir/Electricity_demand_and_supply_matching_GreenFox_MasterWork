@@ -1,6 +1,5 @@
 package com.gfa.powertrade.demand.models;
 
-import com.gfa.powertrade.capacity.models.CapacityResponseDTO;
 import lombok.Data;
 import java.util.ArrayList;
 import java.util.List;

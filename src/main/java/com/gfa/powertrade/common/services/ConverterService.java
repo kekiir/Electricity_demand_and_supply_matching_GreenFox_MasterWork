@@ -11,37 +11,33 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class ConverterService {
 
- private TimeService timeService;
+  private TimeServiceImp timeService;
 
   public DemandResponseDTO convertDemandToResponseDTO(Demand demand) {
-    return new DemandResponseDTO(demand.getId(),
-        demand.getAmount(), demand.getRemained(), demand.getPrice(),
+    return new DemandResponseDTO(demand.getId(), demand.getAmount(), demand.getRemained(), demand.getPrice(),
         timeService.longToLocalDateTime(demand.getTimeRange().getFrom()),
         timeService.longToLocalDateTime(demand.getTimeRange().getTo()));
   }
 
   public DemandListResponseDTO convertDemandToDemandListDTO(List<Demand> demandList) {
-    List<DemandResponseDTO> list = demandList.stream()
-        .map(this::convertDemandToResponseDTO)
-        .collect(Collectors.toList());
+    List<DemandResponseDTO> list = demandList.stream().map(this::convertDemandToResponseDTO).collect(
+        Collectors.toList());
 
     return new DemandListResponseDTO(list);
   }
 
   public CapacityResponseDTO convertCapacityToResponseDTO(Capacity capacity) {
-    return new CapacityResponseDTO(capacity.getId(), capacity.getEnergySource().toString(),
-        capacity.getAmount(), capacity.getAvailable(), capacity.getPrice(),
+    return new CapacityResponseDTO(capacity.getId(), capacity.getEnergySource().toString(), capacity.getAmount(),
+        capacity.getAvailable(), capacity.getPrice(),
         timeService.longToLocalDateTime(capacity.getTimeRange().getFrom()),
         timeService.longToLocalDateTime(capacity.getTimeRange().getTo()));
   }
 
   public CapacityListResponseDTO convertCapacityToCapacityListDTO(List<Capacity> capacityList) {
-    List<CapacityResponseDTO> list = capacityList.stream()
-        .map(this::convertCapacityToResponseDTO)
-        .collect(Collectors.toList());
+    List<CapacityResponseDTO> list = capacityList.stream().map(this::convertCapacityToResponseDTO).collect(
+        Collectors.toList());
 
     return new CapacityListResponseDTO(list);
   }
-
 
 }

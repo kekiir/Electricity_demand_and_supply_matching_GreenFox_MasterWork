@@ -35,7 +35,7 @@ public class Supplier extends User {
     this.id = id1;
     this.username = username1;
     this.password = password1;
-    this.capacityList = capacityList == null? new ArrayList<>():capacityList;
+    this.capacityList = capacityList == null ? new ArrayList<>() : capacityList;
   }
 
 }

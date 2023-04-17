@@ -20,8 +20,7 @@ public class DemandController {
   private DemandService demandService;
 
   @GetMapping("/capacities/{idString}")
-  public ResponseEntity<?> findDemands( @PathVariable String idString,
-      UsernamePasswordAuthenticationToken auth) {
+  public ResponseEntity<?> findDemands(@PathVariable String idString, UsernamePasswordAuthenticationToken auth) {
     Integer id;
     try {
       id = Integer.parseInt(idString);
@@ -31,12 +30,10 @@ public class DemandController {
     User user = ((User) auth.getPrincipal());
     try {
       return ResponseEntity.ok().body(demandService.findCapacitiesForDemand(id, user));
-    } catch ( ForbiddenActionException e) {
+    } catch (ForbiddenActionException e) {
       return ResponseEntity.status(406).body(new ErrorDTO(e.getMessage()));
     }
   }
-
-
 
   @PostMapping
   public ResponseEntity<?> createDemand(@Valid @RequestBody DemandRequestDTO demandRequestDTO,
@@ -52,11 +49,11 @@ public class DemandController {
   }
 
   @PutMapping("")
-  public ResponseEntity<?> updateDemand( @Valid @RequestBody DemandUpdateRequestDTO demandUpdateRequestDTO,
+  public ResponseEntity<?> updateDemand(@Valid @RequestBody DemandUpdateRequestDTO demandUpdateRequestDTO,
       UsernamePasswordAuthenticationToken auth) {
     User user = ((User) auth.getPrincipal());
     try {
-      return ResponseEntity.ok().body(demandService.updateDemand(demandUpdateRequestDTO,user));
+      return ResponseEntity.ok().body(demandService.updateDemand(demandUpdateRequestDTO, user));
     } catch (IllegalArgumentException | InvalidEnergySourceException | ForbiddenActionException e) {
       return ResponseEntity.status(406).body(new ErrorDTO(e.getMessage()));
     }
