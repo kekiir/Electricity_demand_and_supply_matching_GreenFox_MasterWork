@@ -1,5 +1,6 @@
 package com.gfa.powertrade.demand.services;
 
+import com.gfa.powertrade.capacity.models.Capacity;
 import com.gfa.powertrade.capacity.models.CapacityListResponseDTO;
 import com.gfa.powertrade.capacity.repositories.CapacityRepository;
 import com.gfa.powertrade.capacity.services.CapacityServiceImp;
@@ -38,6 +39,7 @@ public class DemandServiceImp implements DemandService {
     Long from = demandRepository.findById(id).get().getTimeRange().getFrom();
     Long to = demandRepository.findById(id).get().getTimeRange().getTo();
 
+    List<Capacity> capList = capacityRepository.findAll();
     return new CapacityListResponseDTO(capacityRepository.findAll().stream()
         .filter(c -> c.getTimeRange().getTo() > from)
         .filter(c -> c.getTimeRange().getFrom() < to)
@@ -104,7 +106,7 @@ public class DemandServiceImp implements DemandService {
   private Demand setDemandVariables(DemandRequestDTO demandRequestDTO, User user) {
     Demand demand = Demand.builder()
         .amount(demandRequestDTO.getAmountMW())
-        .covered(0d)
+        .remained(0d)
         .price(demandRequestDTO.getPrice())
         .consumer(consumerRepository.findById(user.getId()).get())
         .contractList(new ArrayList<>())

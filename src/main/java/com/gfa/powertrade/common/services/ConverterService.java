@@ -15,7 +15,7 @@ public class ConverterService {
 
   public DemandResponseDTO convertDemandToResponseDTO(Demand demand) {
     return new DemandResponseDTO(demand.getId(),
-        demand.getAmount(), demand.getCovered(), demand.getPrice(),
+        demand.getAmount(), demand.getRemained(), demand.getPrice(),
         timeService.longToLocalDateTime(demand.getTimeRange().getFrom()),
         timeService.longToLocalDateTime(demand.getTimeRange().getTo()));
   }

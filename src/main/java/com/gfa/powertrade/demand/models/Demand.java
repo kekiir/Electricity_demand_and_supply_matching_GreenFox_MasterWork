@@ -1,9 +1,12 @@
 package com.gfa.powertrade.demand.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.gfa.powertrade.common.models.TimeRange;
 import com.gfa.powertrade.consumers.models.Consumer;
-import com.gfa.powertrade.contract.Contract;
+import com.gfa.powertrade.contract.models.Contract;
 import lombok.*;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import javax.persistence.*;
 import java.util.List;
 
@@ -21,12 +24,15 @@ public class Demand {
   @Column(name = "demand_id")
   private Integer id;
   private Double amount;
-  private Double covered;
-  @OneToOne(mappedBy = "demand",cascade = CascadeType.ALL)
+  private Double remained;
+  @OneToOne(mappedBy = "demand", cascade = CascadeType.ALL)
   private TimeRange timeRange;
   private Double price;
+  @JsonIgnore
   @ManyToOne
   private Consumer consumer;
-  @OneToMany (mappedBy = "demand")
+  @OneToMany(mappedBy = "demand", cascade = CascadeType.ALL)
+  @LazyCollection(LazyCollectionOption.FALSE)
   private List<Contract> contractList;
+
 }
