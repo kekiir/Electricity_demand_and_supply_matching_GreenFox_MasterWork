@@ -3,12 +3,11 @@ package com.gfa.powertrade.capacity.services;
 import com.gfa.powertrade.capacity.models.*;
 import com.gfa.powertrade.capacity.repositories.CapacityRepository;
 import com.gfa.powertrade.common.exceptions.*;
-import com.gfa.powertrade.common.models.TimeRange;
-import com.gfa.powertrade.common.models.TimeRangeRepository;
 import com.gfa.powertrade.common.services.ConverterService;
 import com.gfa.powertrade.common.services.TimeServiceImp;
 import com.gfa.powertrade.demand.models.DemandListResponseDTO;
 import com.gfa.powertrade.demand.repositories.DemandRepository;
+import com.gfa.powertrade.powerquantity.services.PowerQuantityService;
 import com.gfa.powertrade.supplier.models.Supplier;
 import com.gfa.powertrade.supplier.repository.SupplierRepository;
 import com.gfa.powertrade.user.models.User;
@@ -26,19 +25,19 @@ public class CapacityServiceImp implements CapacityService {
   private SupplierRepository supplierRepository;
   private TimeServiceImp timeService;
   private CapacityRepository capacityRepository;
-  private TimeRangeRepository timeRangeRepository;
   private DemandRepository demandRepository;
   private ConverterService converterService;
   private UserService userService;
+  private PowerQuantityService powerQuantityService;
 
   public DemandListResponseDTO findDemandsForCapacity(int id, User user) {
     userService.validateSuppliertype(user);
-    Long from = capacityRepository.findById(id).get().getTimeRange().getFrom();
-    Long to = capacityRepository.findById(id).get().getTimeRange().getTo();
+    Long capacityFromTime = capacityRepository.findById(id).get().getCapacityFromTime();
+    Long capacityToTime = capacityRepository.findById(id).get().getCapacityToTime();
 
     return new DemandListResponseDTO(demandRepository.findAll().stream()
-        .filter(demand -> demand.getTimeRange().getTo() > from)
-        .filter(demand -> demand.getTimeRange().getFrom() < to)
+        .filter(demand -> demand.getDemandToTime() > capacityFromTime)
+        .filter(demand -> demand.getDemandFromTime() < capacityToTime)
         .map(d -> converterService.convertDemandToResponseDTO(d))
         .collect(Collectors.toList()));
   }
@@ -62,66 +61,55 @@ public class CapacityServiceImp implements CapacityService {
     Capacity capacity = capacityRepository.findById(capacityUpdateRequestDTO.getId())
         .orElseThrow(() -> new IdNotFoundException());
     capacityBelongsToSupplier(capacity, supplier.getId());
-    timeService.validateGivenDates(capacityUpdateRequestDTO.getFrom(), capacityUpdateRequestDTO.getTo());
+    timeService.validateGivenDates(capacityUpdateRequestDTO.getFromTime(), capacityUpdateRequestDTO.getToTime());
     updataCapacity(capacityUpdateRequestDTO, capacity);
     return converterService.convertCapacityToResponseDTO(capacityRepository.save(capacity));
   }
 
   private void updataCapacity(CapacityUpdateRequestDTO capacityUpdateRequestDTO, Capacity capacity) {
+    String capacityFromTimeString = capacityUpdateRequestDTO.getFromTime();
+    String capacityToTimeString = capacityUpdateRequestDTO.getToTime();
     capacity.setId(capacityUpdateRequestDTO.getId());
-    capacity.setAmount(capacityUpdateRequestDTO.getAmountMW());
+    capacity.setCapacityAmount(capacityUpdateRequestDTO.getAmountMW());
     capacity.setPrice(capacityUpdateRequestDTO.getPrice());
     capacity.setEnergySource(EnergySource.valueOf(capacityUpdateRequestDTO.getEnergySource()));
-    updateTimeRange(capacityUpdateRequestDTO, capacity);
+    capacity.setCapacityFromTime(timeService.localDateTimeTolong(LocalDateTime.parse(capacityFromTimeString)));
+    capacity.setCapacityToTime(timeService.localDateTimeTolong(LocalDateTime.parse(capacityToTimeString)));
 
   }
 
-  public void updateTimeRange(CapacityUpdateRequestDTO capacityUpdateRequestDTO, Capacity capacity) {
-    String from = capacityUpdateRequestDTO.getFrom();
-    String to = capacityUpdateRequestDTO.getTo();
-    capacity.getTimeRange().setFrom(timeService.localDateTimeTolong(LocalDateTime.parse(from)));
-    capacity.getTimeRange().setTo(timeService.localDateTimeTolong(LocalDateTime.parse(to)));
-    timeRangeRepository.save(capacity.getTimeRange());
-  }
 
   private void capacityBelongsToSupplier(Capacity capacity, Integer userId) throws ForbiddenActionException {
     if (userId != capacity.getSupplier().getId())
       throw new ForbiddenActionException();
   }
 
+
   @Override
   public CapacityResponseDTO createCapacity(User user, CapacityRequestDTO capacityRequestDTO) throws
       ForbiddenActionException, IllegalArgumentException, InvalidEnergySourceException {
     userService.validateSuppliertype(user);
-    timeService.validateGivenDates(capacityRequestDTO.getFrom(), capacityRequestDTO.getTo());
+    timeService.validateGivenDates(capacityRequestDTO.getFromTime(), capacityRequestDTO.getToTime());
     checkCorrectEnergySource(capacityRequestDTO.getEnergySource());
     Capacity capacity = setCapacityVariables(capacityRequestDTO, user);
-
+    powerQuantityService.createPowreQuantities(capacity);
     return converterService.convertCapacityToResponseDTO(capacityRepository.save(capacity));
   }
 
   public Capacity setCapacityVariables(CapacityRequestDTO capacityRequestDTO, User user) {
     Capacity capacity = Capacity.builder()
         .energySource(EnergySource.valueOf(capacityRequestDTO.getEnergySource().toUpperCase()))
-        .amount(capacityRequestDTO.getAmountMW())
+        .capacityAmount(capacityRequestDTO.getAmountMW())
         .available(capacityRequestDTO.getAmountMW())
         .price(capacityRequestDTO.getPrice())
+        .capacityFromTime(timeService.localDateTimeTolong(LocalDateTime.parse(capacityRequestDTO.getFromTime())))
+        .capacityToTime(timeService.localDateTimeTolong(LocalDateTime.parse(capacityRequestDTO.getToTime())))
         .supplier(supplierRepository.findById(user.getId()).get())
         .contractList(new ArrayList<>())
+        .powerQuantityList(new ArrayList<>())
         .build();
 
-    TimeRange timeRange = createTimeRange(capacityRequestDTO.getFrom(), capacityRequestDTO.getTo(), capacity);
-    capacity.setTimeRange(timeRange);
     return capacity;
-  }
-
-  public TimeRange createTimeRange(String from, String to, Capacity capacity) {
-    return TimeRange.builder()
-        .from(timeService.localDateTimeTolong(LocalDateTime.parse(from)))
-        .to(timeService.localDateTimeTolong(LocalDateTime.parse(to)))
-        .capacity(capacity)
-        .build();
-
   }
 
 

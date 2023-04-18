@@ -11,7 +11,7 @@ public class DemandResponseDTO {
   private Double amountMW;
   private Double covered;
   private Double price;
-  private LocalDateTime from;
-  private LocalDateTime to;
+  private LocalDateTime fromTime;
+  private LocalDateTime toTime;
 
 }

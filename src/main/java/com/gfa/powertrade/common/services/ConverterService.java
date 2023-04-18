@@ -14,9 +14,9 @@ public class ConverterService {
   private TimeServiceImp timeService;
 
   public DemandResponseDTO convertDemandToResponseDTO(Demand demand) {
-    return new DemandResponseDTO(demand.getId(), demand.getAmount(), demand.getRemained(), demand.getPrice(),
-        timeService.longToLocalDateTime(demand.getTimeRange().getFrom()),
-        timeService.longToLocalDateTime(demand.getTimeRange().getTo()));
+    return new DemandResponseDTO(demand.getId(), demand.getDemandAmount(), demand.getRemained(), demand.getPrice(),
+        timeService.longToLocalDateTime(demand.getDemandFromTime()),
+        timeService.longToLocalDateTime(demand.getDemandToTime()));
   }
 
   public DemandListResponseDTO convertDemandToDemandListDTO(List<Demand> demandList) {
@@ -27,10 +27,10 @@ public class ConverterService {
   }
 
   public CapacityResponseDTO convertCapacityToResponseDTO(Capacity capacity) {
-    return new CapacityResponseDTO(capacity.getId(), capacity.getEnergySource().toString(), capacity.getAmount(),
+    return new CapacityResponseDTO(capacity.getId(), capacity.getEnergySource().toString(), capacity.getCapacityAmount(),
         capacity.getAvailable(), capacity.getPrice(),
-        timeService.longToLocalDateTime(capacity.getTimeRange().getFrom()),
-        timeService.longToLocalDateTime(capacity.getTimeRange().getTo()));
+        timeService.longToLocalDateTime(capacity.getCapacityFromTime()),
+        timeService.longToLocalDateTime(capacity.getCapacityToTime()));
   }
 
   public CapacityListResponseDTO convertCapacityToCapacityListDTO(List<Capacity> capacityList) {

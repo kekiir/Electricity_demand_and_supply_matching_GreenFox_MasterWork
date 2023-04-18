@@ -4,8 +4,6 @@ import com.gfa.powertrade.capacity.models.Capacity;
 import com.gfa.powertrade.capacity.models.CapacityListResponseDTO;
 import com.gfa.powertrade.capacity.repositories.CapacityRepository;
 import com.gfa.powertrade.common.exceptions.*;
-import com.gfa.powertrade.common.models.TimeRange;
-import com.gfa.powertrade.common.models.TimeRangeRepository;
 import com.gfa.powertrade.common.services.ConverterService;
 import com.gfa.powertrade.common.services.TimeServiceImp;
 import com.gfa.powertrade.consumers.models.Consumer;
@@ -28,7 +26,6 @@ public class DemandServiceImp implements DemandService {
   private ConsumerRepository consumerRepository;
   private TimeServiceImp timeService;
   private DemandRepository demandRepository;
-  private TimeRangeRepository timeRangeRepository;
   private CapacityRepository capacityRepository;
   private ConverterService converterService;
   private UserService userService;
@@ -36,14 +33,14 @@ public class DemandServiceImp implements DemandService {
 
   @Override
   public Object findCapacitiesForDemand(Integer id, User user) {
-    Consumer consumer = userService.validateConsumertype(user);
-    Long from = demandRepository.findById(id).get().getTimeRange().getFrom();
-    Long to = demandRepository.findById(id).get().getTimeRange().getTo();
+    userService.validateConsumertype(user);
+    Long demandFromTime = demandRepository.findById(id).get().getDemandFromTime();
+    Long demandToTime = demandRepository.findById(id).get().getDemandToTime();
 
     List<Capacity> capList = capacityRepository.findAll();
     return new CapacityListResponseDTO(capacityRepository.findAll().stream()
-        .filter(c -> c.getTimeRange().getTo() > from)
-        .filter(c -> c.getTimeRange().getFrom() < to)
+        .filter(c -> c.getCapacityToTime() > demandFromTime)
+        .filter(c -> c.getCapacityFromTime() < demandToTime)
         .map(c -> converterService.convertCapacityToResponseDTO(c))
         .collect(Collectors.toList()));
   }
@@ -66,27 +63,21 @@ public class DemandServiceImp implements DemandService {
     Demand demand = demandRepository.findById(demandUpdateRequestDTO.getId())
         .orElseThrow(() -> new IdNotFoundException());
     demandBelongsToConsumer(demand, consumer.getId());
-    timeService.validateGivenDates(demandUpdateRequestDTO.getFrom(), demandUpdateRequestDTO.getTo());
+    timeService.validateGivenDates(demandUpdateRequestDTO.getFromTime(), demandUpdateRequestDTO.getToTime());
     updataDemand(demandUpdateRequestDTO, demand);
     return converterService.convertDemandToResponseDTO(demandRepository.save(demand));
   }
 
   private void updataDemand(DemandUpdateRequestDTO demandUpdateRequestDTO, Demand demand) {
+    String from = demandUpdateRequestDTO.getFromTime();
+    String to = demandUpdateRequestDTO.getToTime();
     demand.setId(demandUpdateRequestDTO.getId());
-    demand.setAmount(demandUpdateRequestDTO.getAmountMW());
+    demand.setDemandAmount(demandUpdateRequestDTO.getAmountMW());
     demand.setPrice(demandUpdateRequestDTO.getPrice());
-    updateTimeRange(demandUpdateRequestDTO, demand);
+    demand.setDemandFromTime(timeService.localDateTimeTolong(LocalDateTime.parse(from)));
+    demand.setDemandToTime(timeService.localDateTimeTolong(LocalDateTime.parse(to)));
 
   }
-
-  public void updateTimeRange(DemandUpdateRequestDTO demandUpdateRequestDTO, Demand demand) {
-    String from = demandUpdateRequestDTO.getFrom();
-    String to = demandUpdateRequestDTO.getTo();
-    demand.getTimeRange().setFrom(timeService.localDateTimeTolong(LocalDateTime.parse(from)));
-    demand.getTimeRange().setTo(timeService.localDateTimeTolong(LocalDateTime.parse(to)));
-    timeRangeRepository.save(demand.getTimeRange());
-  }
-
 
 
   private void demandBelongsToConsumer(Demand demand, Integer userId) throws ForbiddenActionException {
@@ -98,7 +89,7 @@ public class DemandServiceImp implements DemandService {
   public DemandResponseDTO createDemand(User user, DemandRequestDTO demandRequestDTO) throws
       ForbiddenActionException, IllegalArgumentException, InvalidEnergySourceException {
     userService.validateConsumertype(user);
-    timeService.validateGivenDates(demandRequestDTO.getFrom(), demandRequestDTO.getTo());
+    timeService.validateGivenDates(demandRequestDTO.getFromTime(), demandRequestDTO.getToTime());
     Demand demand = setDemandVariables(demandRequestDTO, user);
 
     return converterService.convertDemandToResponseDTO(demandRepository.save(demand));
@@ -106,24 +97,16 @@ public class DemandServiceImp implements DemandService {
 
   private Demand setDemandVariables(DemandRequestDTO demandRequestDTO, User user) {
     Demand demand = Demand.builder()
-        .amount(demandRequestDTO.getAmountMW())
+        .demandAmount(demandRequestDTO.getAmountMW())
         .remained(0d)
         .price(demandRequestDTO.getPrice())
         .consumer(consumerRepository.findById(user.getId()).get())
         .contractList(new ArrayList<>())
+        .demandFromTime(timeService.localDateTimeTolong(LocalDateTime.parse(demandRequestDTO.getFromTime())))
+        .demandToTime(timeService.localDateTimeTolong(LocalDateTime.parse(demandRequestDTO.getToTime())))
         .build();
-    TimeRange timeRange = createTimeRange(demandRequestDTO.getFrom(), demandRequestDTO.getTo(), demand);
-    demand.setTimeRange(timeRange);
+
     return demand;
-  }
-
-  public TimeRange createTimeRange(String from, String to, Demand demand) {
-    return TimeRange.builder()
-        .from(timeService.localDateTimeTolong(LocalDateTime.parse(from)))
-        .to(timeService.localDateTimeTolong(LocalDateTime.parse(to)))
-        .demand(demand)
-        .build();
-
   }
 
 

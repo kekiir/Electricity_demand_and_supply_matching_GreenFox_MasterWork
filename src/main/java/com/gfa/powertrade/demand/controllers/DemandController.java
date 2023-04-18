@@ -1,7 +1,6 @@
 package com.gfa.powertrade.demand.controllers;
 
-import com.gfa.powertrade.common.exceptions.ForbiddenActionException;
-import com.gfa.powertrade.common.exceptions.InvalidEnergySourceException;
+import com.gfa.powertrade.common.exceptions.*;
 import com.gfa.powertrade.common.models.ErrorDTO;
 import com.gfa.powertrade.demand.models.*;
 import com.gfa.powertrade.demand.services.DemandService;
@@ -54,7 +53,7 @@ public class DemandController {
     User user = ((User) auth.getPrincipal());
     try {
       return ResponseEntity.ok().body(demandService.updateDemand(demandUpdateRequestDTO, user));
-    } catch (IllegalArgumentException | InvalidEnergySourceException | ForbiddenActionException e) {
+    } catch (IdNotFoundException | IllegalArgumentException | InvalidEnergySourceException | ForbiddenActionException e) {
       return ResponseEntity.status(406).body(new ErrorDTO(e.getMessage()));
     }
   }

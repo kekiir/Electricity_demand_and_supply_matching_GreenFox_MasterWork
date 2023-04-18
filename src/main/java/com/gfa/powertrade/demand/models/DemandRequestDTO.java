@@ -11,14 +11,15 @@ public class DemandRequestDTO {
   @NotNull(message = "Price is required.")
   private Double price;
 
-  @NotBlank(message = "from: 'From' date is requered.")
-  @Pattern(regexp = "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0]{2}$", message = "from: Required date pattern: "
+  @NotBlank(message = "fromTime: 'From' date is requered.")
+  @Pattern(regexp = "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0]{2}$", message = "fromTime: Required date pattern: "
       + "yyyy-MM-dd'T'HH:00")
-  private String from;
+  private String fromTime;
 
-  @NotBlank(message = "to: 'To' date is requered.")
-  @Pattern(regexp = "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0]{2}$", message = "to: Required date pattern: "
+  @NotBlank(message = "toTime: 'To' date is requered.")
+  @Pattern(regexp = "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0]{2}$", message = "toTime: Required date pattern: "
       + "yyyy-MM-dd'T'HH:00")
-  private String to;
+  private String toTime;
 
 }
+

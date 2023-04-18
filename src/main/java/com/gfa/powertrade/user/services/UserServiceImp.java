@@ -9,7 +9,6 @@ import com.gfa.powertrade.supplier.models.Supplier;
 import com.gfa.powertrade.supplier.repository.SupplierRepository;
 import com.gfa.powertrade.user.models.User;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
 

@@ -23,10 +23,13 @@ public class Demand {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "demand_id")
   private Integer id;
-  private Double amount;
+  private Double demandAmount;
   private Double remained;
-  @OneToOne(mappedBy = "demand", cascade = CascadeType.ALL)
-  private TimeRange timeRange;
+  private Long demandFromTime;
+  private Long demandToTime;
+
+
+
   private Double price;
   @JsonIgnore
   @ManyToOne
