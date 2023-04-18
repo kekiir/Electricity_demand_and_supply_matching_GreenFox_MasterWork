@@ -70,6 +70,9 @@ segítségével lekérhetik a másnapi teljesítmény trendet, és megvizsgálha
 - Kapacitás, vagy Kereslet POST-olása esetán, a kapacitást lebontja mérlegórányi kapacitás egységekre és hozzárendeli a kapacitás részegységeket az adott mérlegórához
 - A Kapacitások és Keresletek  POST-olásának a lezárta után, minden egyes mérlegórában megállapítja a villamos áram árát, és hogy mely Termelők vagy Fogyasztók esnek ki a kerekedelemből.
 
+## API dokumentáció:
+http://localhost:8080/swagger-ui/index.html
+
 ## Project setup
 | Function | Implementation |
 | ------ | ------ |
