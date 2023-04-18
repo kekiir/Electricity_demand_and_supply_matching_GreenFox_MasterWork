@@ -1,7 +1,6 @@
 package com.gfa.powertrade.demand.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.gfa.powertrade.common.models.TimeRange;
 import com.gfa.powertrade.consumers.models.Consumer;
 import com.gfa.powertrade.contract.models.Contract;
 import lombok.*;
