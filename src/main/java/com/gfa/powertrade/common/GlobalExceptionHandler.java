@@ -3,6 +3,9 @@ package com.gfa.powertrade.common;
 import com.gfa.powertrade.common.models.ErrorDTO;
 import com.gfa.powertrade.common.models.ErrorListResponseDTO;
 import com.gfa.powertrade.login.exceptions.LoginFailureException;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.*;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -32,18 +35,24 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
   }
 
   @Override
+  @ApiResponse(responseCode = "423", description = "JSON is not readable.",
+      content = @Content(schema = @Schema(implementation = ErrorDTO.class)))
   protected ResponseEntity<Object> handleHttpMessageNotReadable(
       HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
     ErrorDTO errorDTO = new ErrorDTO("JSON is not readable.");
 
     return new ResponseEntity<>(errorDTO, HttpStatus.BAD_REQUEST);
   }
-
+  @ApiResponse(responseCode = "401", description = "id doesn't belong to logged in player",
+      content = @Content(schema = @Schema(implementation = ErrorDTO.class)))
   @ExceptionHandler(LoginFailureException.class)
   public ResponseEntity<ErrorDTO> handle(LoginFailureException ex) {
     ErrorDTO errorDTO = new ErrorDTO(ex.getMessage());
     return ResponseEntity.status(401).body(errorDTO);
   }
+
+
+
 
   public ResponseEntity<ErrorDTO> handleNotAcceptable(RuntimeException ex) {
     ErrorDTO response = new ErrorDTO(ex.getMessage());

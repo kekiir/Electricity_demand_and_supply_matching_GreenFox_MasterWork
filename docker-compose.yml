@@ -1,0 +1,9 @@
+version: "3.9"
+services:
+  web:
+    build: src
+    env_file:
+      - .env.docker
+    image: "powertrade"
+    ports:
+      - "8080:8080"
