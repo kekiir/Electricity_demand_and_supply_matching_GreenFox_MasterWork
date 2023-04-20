@@ -92,6 +92,7 @@ public class CapacityServiceImp implements CapacityService {
     timeService.validateGivenDates(capacityRequestDTO.getFromTime(), capacityRequestDTO.getToTime());
     checkCorrectEnergySource(capacityRequestDTO.getEnergySource());
     Capacity capacity = setCapacityVariables(capacityRequestDTO, user);
+    capacityRepository.save(capacity);
     powerQuantityService.createPowreQuantities(capacity);
     return converterService.convertCapacityToResponseDTO(capacityRepository.save(capacity));
   }

@@ -28,20 +28,19 @@ public class PowerQuantityServiceImp implements PowerQuantityService {
     Long firstPowerQuantityFromTime = capacity.getCapacityFromTime();
     Long firstPowerQuiantityToTime = firstPowerQuantityFromTime + oneHourInMilliSeconds;
     for (int i = 1; i <= numberOfbalancedHours; i++) {
-
       PowerQuantity newPowerQuantity = createNewPowerQuantity(capacity, firstPowerQuantityFromTime,
           firstPowerQuiantityToTime);
       BalancedHour balancedHour =
           findOrCreateIfNotfoundBalancedHour(firstPowerQuantityFromTime, firstPowerQuiantityToTime);
       newPowerQuantity.setBalancedHour(balancedHour);
       balancedHour.getPowerQuantityList().add(newPowerQuantity);
-      capacityRepository.save(capacity);
-      capacity.getPowerQuantityList().add(newPowerQuantity);
-      balancedHourRepository.save(balancedHour);
       powerQuantityRepository.save(newPowerQuantity);
+      balancedHourRepository.save(balancedHour);
+      capacity.getPowerQuantityList().add(newPowerQuantity);
       firstPowerQuantityFromTime += oneHourInMilliSeconds;
       firstPowerQuiantityToTime += oneHourInMilliSeconds;
     }
+      capacityRepository.save(capacity);
 
   }
 
