@@ -34,9 +34,9 @@ public class PowerQuantityServiceImp implements PowerQuantityService {
       BalancedHour balancedHour =
           balancedHourService.findOrCreateIfNotfoundBalancedHour(firstPowerQuantityFromTime, firstPowerQuiantityToTime);
       newPowerQuantity.setBalancedHour(balancedHour);
-      balancedHour.getPowerQuantityList().add(newPowerQuantity);
       balancedHourRepository.save(balancedHour);
       powerQuantityRepository.save(newPowerQuantity);
+      balancedHour.getPowerQuantityList().add(newPowerQuantity);
       capacity.getPowerQuantityList().add(newPowerQuantity);
       firstPowerQuantityFromTime += BalancedHourServiceImp.oneHourInMilliSeconds;
       firstPowerQuiantityToTime += BalancedHourServiceImp.oneHourInMilliSeconds;
