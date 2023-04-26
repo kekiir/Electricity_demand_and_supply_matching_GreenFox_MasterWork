@@ -1,4 +1,4 @@
-package com.gfa.powertrade.demandQuantity.models;
+package com.gfa.powertrade.demandquantity.models;
 
 import com.gfa.powertrade.ballancedhour.models.BalancedHour;
 import com.gfa.powertrade.demand.models.Demand;
@@ -22,14 +22,18 @@ public class DemandQuantity {
   @ManyToOne
   @JoinColumn(name = "demand_id")
   private Demand demand;
-  @Column(name = "amount")
+
+  @Column
   private Double demandQuantityAmount;
+
   @Column(name = "from_time")
-  private Long from;
+  private Long demandQuantityFromTime;
+
   @Column(name = "to_time")
-  private Long to;
+  private Long demandQuantityToTime;
 
   @ManyToOne
   @JoinColumn(name = "balanced_hour_id")
   private BalancedHour balancedHour;
+
 }

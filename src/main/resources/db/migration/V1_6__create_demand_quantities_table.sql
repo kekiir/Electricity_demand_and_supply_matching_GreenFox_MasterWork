@@ -2,7 +2,6 @@ CREATE TABLE IF NOT EXISTS demand_quantities
 (
   demand_quantity_id INT NOT NULL AUTO_INCREMENT,
   demand_id INT NOT NULL,
-  amount DOUBLE  NOT NULL,
   demand_quantity_amount DOUBLE  NOT NULL,
   from_time bigint,
   to_time bigint,

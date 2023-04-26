@@ -24,7 +24,8 @@ public class PowerQuantityServiceImp implements PowerQuantityService {
   @Override
   public void createPowreQuantities(Capacity capacity) {
 
-    Long numberOfbalancedHours = balancedHourService.calculateNumberOfBallanceHours(capacity);
+    Long numberOfbalancedHours = balancedHourService.calculateNumberOfBallanceHours(capacity.getCapacityToTime(),
+        capacity.getCapacityFromTime());
     Long firstPowerQuantityFromTime = capacity.getCapacityFromTime();
     Long firstPowerQuiantityToTime = firstPowerQuantityFromTime + BalancedHourServiceImp.oneHourInMilliSeconds;
     for (int i = 1; i <= numberOfbalancedHours; i++) {

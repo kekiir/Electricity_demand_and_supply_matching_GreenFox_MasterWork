@@ -3,6 +3,7 @@ package com.gfa.powertrade.demand.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.gfa.powertrade.consumers.models.Consumer;
 import com.gfa.powertrade.contract.models.Contract;
+import com.gfa.powertrade.demandquantity.models.DemandQuantity;
 import lombok.*;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
@@ -36,5 +37,9 @@ public class Demand {
   @OneToMany(mappedBy = "demand", cascade = CascadeType.ALL)
   @LazyCollection(LazyCollectionOption.FALSE)
   private List<Contract> contractList;
+
+  @OneToMany(mappedBy = "demand", cascade = CascadeType.ALL)
+  @LazyCollection(LazyCollectionOption.FALSE)
+  private List<DemandQuantity> demandQuantityList;
 
 }

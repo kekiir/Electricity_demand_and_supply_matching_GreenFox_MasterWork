@@ -3,6 +3,7 @@ package com.gfa.powertrade.ballancedhour.services;
 import com.gfa.powertrade.ballancedhour.models.BalancedHour;
 import com.gfa.powertrade.ballancedhour.repositories.BalancedHourRepository;
 import com.gfa.powertrade.capacity.models.Capacity;
+import com.gfa.powertrade.demand.models.Demand;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
@@ -34,12 +35,13 @@ public class BalancedHourServiceImp implements BalancedHourService{
           .balanced_hour_from_time(fromTime)
           .balanced_hour_to_time(toTime)
           .powerQuantityList(new ArrayList<>())
+          .demandQuantityList(new ArrayList<>())
           .balanced_hour_price(20d)
           .build();
   }
 
-  public Long calculateNumberOfBallanceHours(Capacity capacity) {
-    return (capacity.getCapacityToTime() - capacity.getCapacityFromTime()) / oneHourInMilliSeconds;
+  public Long calculateNumberOfBallanceHours(Long toTime, Long fromTime) {
+    return (toTime - fromTime) / oneHourInMilliSeconds;
   }
 
 }

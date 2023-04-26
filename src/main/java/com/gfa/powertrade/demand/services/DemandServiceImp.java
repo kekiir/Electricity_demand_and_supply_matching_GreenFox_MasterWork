@@ -10,6 +10,7 @@ import com.gfa.powertrade.consumers.models.Consumer;
 import com.gfa.powertrade.consumers.repositories.ConsumerRepository;
 import com.gfa.powertrade.demand.models.*;
 import com.gfa.powertrade.demand.repositories.DemandRepository;
+import com.gfa.powertrade.demandquantity.services.DemandQuantityService;
 import com.gfa.powertrade.user.models.User;
 import com.gfa.powertrade.user.services.UserService;
 import lombok.AllArgsConstructor;
@@ -29,7 +30,7 @@ public class DemandServiceImp implements DemandService {
   private CapacityRepository capacityRepository;
   private ConverterService converterService;
   private UserService userService;
-
+  private DemandQuantityService demandQuantityService;
 
   @Override
   public Object findCapacitiesForDemand(Integer id, User user) {
@@ -79,7 +80,6 @@ public class DemandServiceImp implements DemandService {
 
   }
 
-
   private void demandBelongsToConsumer(Demand demand, Integer userId) throws ForbiddenActionException {
     if (userId != demand.getConsumer().getId())
       throw new ForbiddenActionException();
@@ -91,8 +91,9 @@ public class DemandServiceImp implements DemandService {
     userService.validateConsumertype(user);
     timeService.validateGivenDates(demandRequestDTO.getFromTime(), demandRequestDTO.getToTime());
     Demand demand = setDemandVariables(demandRequestDTO, user);
-
-    return converterService.convertDemandToResponseDTO(demandRepository.save(demand));
+    demand = demandRepository.save(demand);
+    demandQuantityService.createDemandQuantities(demand);
+    return converterService.convertDemandToResponseDTO(demand);
   }
 
   private Demand setDemandVariables(DemandRequestDTO demandRequestDTO, User user) {
@@ -100,15 +101,15 @@ public class DemandServiceImp implements DemandService {
         .demandAmount(demandRequestDTO.getAmountMW())
         .remained(0d)
         .price(demandRequestDTO.getPrice())
-        .consumer(consumerRepository.findById(user.getId()).get())
-        .contractList(new ArrayList<>())
         .demandFromTime(timeService.localDateTimeTolong(LocalDateTime.parse(demandRequestDTO.getFromTime())))
         .demandToTime(timeService.localDateTimeTolong(LocalDateTime.parse(demandRequestDTO.getToTime())))
+        .consumer(consumerRepository.findById(user.getId()).get())
+        .contractList(new ArrayList<>())
+        .demandQuantityList(new ArrayList<>())
         .build();
 
     return demand;
   }
-
 
   @Override
   public DemandListResponseDTO getDemandsByConsumer(User user) {
@@ -116,7 +117,6 @@ public class DemandServiceImp implements DemandService {
 
     return converterService.convertDemandToDemandListDTO(consumer.getDemandList());
   }
-
 
   public Consumer validateConsumertype(User user) throws ForbiddenActionException {
     Consumer consumer;

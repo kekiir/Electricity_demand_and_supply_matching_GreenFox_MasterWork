@@ -1,6 +1,6 @@
 package com.gfa.powertrade.ballancedhour.models;
 
-import com.gfa.powertrade.demandQuantity.models.DemandQuantity;
+import com.gfa.powertrade.demandquantity.models.DemandQuantity;
 import com.gfa.powertrade.powerquantity.models.PowerQuantity;
 import lombok.*;
 import org.hibernate.annotations.LazyCollection;
