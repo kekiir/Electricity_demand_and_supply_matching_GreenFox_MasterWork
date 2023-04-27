@@ -13,6 +13,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -61,8 +62,8 @@ public class RegistrationServiceImp implements RegistrationService {
     if (!reg.getUserType().toUpperCase().equals(UserType.SUPPLIER.toString())
         && !reg.getUserType().toUpperCase().equals(UserType.CONSUMER.toString()))
       throw new InvalidUserTypeException();
-    if (!supplierRepository.findByUsername(reg.getUsername()).isEmpty()
-        && !consumerRepository.findByUsername(reg.getUsername()).isEmpty())
+    if (supplierRepository.findByUsername(reg.getUsername()).isPresent()
+        || consumerRepository.findByUsername(reg.getUsername()).isPresent())
       throw new AlreadyTakenUsernameException("Username is already taken.");
     if (reg.getPassword() == null || reg.getPassword().trim().length() < 8)
       throw new InvalidPasswordException("Password must be at least 8 characters.");
