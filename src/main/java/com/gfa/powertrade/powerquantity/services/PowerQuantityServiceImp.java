@@ -46,6 +46,7 @@ public class PowerQuantityServiceImp implements PowerQuantityService {
 
   }
 
+  @Override
   public PowerQuantity createNewPowerQuantity(Capacity capacity, Long fromTime, Long toTime) {
     return PowerQuantity.builder()
         .capacity(capacity)
@@ -68,20 +69,20 @@ public class PowerQuantityServiceImp implements PowerQuantityService {
 
     Long updatedCapacityFromTime = timeService.StringToLong(capacityUpdateRequestDTO.getFromTime());
     if (updatedCapacityFromTime < capacity.getCapacityFromTime()) {
-      createPowreQuantitiesDependingOnFromTime(capacity, updatedCapacityFromTime);
+      createPowerQuantitiesDependingOnFromTime(capacity, updatedCapacityFromTime);
     } else {
-      deletePowreQuantitiesDependingOnFromTime(capacity, updatedCapacityFromTime);
+      deletePowerQuantitiesDependingOnFromTime(capacity, updatedCapacityFromTime);
     }
 
   }
 
   @Override
-  public void createPowreQuantitiesDependingOnFromTime(Capacity capacity, Long updatedCapacityFromTime) {
+  public void createPowerQuantitiesDependingOnFromTime(Capacity capacity, Long updatedCapacityFromTime) {
     createPowreQuantities(capacity, updatedCapacityFromTime, capacity.getCapacityFromTime());
 
   }
 
-  private void deletePowreQuantitiesDependingOnFromTime(Capacity capacity, Long updatedCapacityFromTime) {
+  public void deletePowerQuantitiesDependingOnFromTime(Capacity capacity, Long updatedCapacityFromTime) {
     for (PowerQuantity pq : capacity.getPowerQuantityList()) {
       if (updatedCapacityFromTime > pq.getPowerQuantityFromTime()) {
         powerQuantityRepository.delete(pq);
@@ -89,7 +90,7 @@ public class PowerQuantityServiceImp implements PowerQuantityService {
     }
   }
 
-  private void updatePowerQuantitiesDependingOnToTime(CapacityUpdateRequestDTO capacityUpdateRequestDTO,
+  public void updatePowerQuantitiesDependingOnToTime(CapacityUpdateRequestDTO capacityUpdateRequestDTO,
       Capacity capacity) {
 
     Long updatedCapacityToTime = timeService.StringToLong(capacityUpdateRequestDTO.getToTime());
@@ -106,7 +107,7 @@ public class PowerQuantityServiceImp implements PowerQuantityService {
 
   }
 
-  private void deletePowreQuantitiesDependingOnToTime(Capacity capacity, Long updatedCapacityToTime) {
+  public void deletePowreQuantitiesDependingOnToTime(Capacity capacity, Long updatedCapacityToTime) {
     for (PowerQuantity pq : capacity.getPowerQuantityList()) {
       if (updatedCapacityToTime < pq.getPowerQuantityFromTime()) {
         powerQuantityRepository.delete(pq);
