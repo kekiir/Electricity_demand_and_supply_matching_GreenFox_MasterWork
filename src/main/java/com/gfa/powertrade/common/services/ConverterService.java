@@ -4,6 +4,7 @@ import com.gfa.powertrade.capacity.models.*;
 import com.gfa.powertrade.demand.models.*;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,8 +16,10 @@ public class ConverterService {
 
   public DemandResponseDTO convertDemandToResponseDTO(Demand demand) {
     return new DemandResponseDTO(demand.getId(), demand.getDemandAmount(), demand.getRemained(), demand.getPrice(),
-        timeService.longToLocalDateTime(demand.getDemandFromTime()),
-        timeService.longToLocalDateTime(demand.getDemandToTime()));
+        timeService.longToLocalDateTime(demand.getDemandFromTime())
+            .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:00")),
+        timeService.longToLocalDateTime(demand.getDemandToTime())
+            .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:00")));
   }
 
   public DemandListResponseDTO convertDemandToDemandListDTO(List<Demand> demandList) {
@@ -27,10 +30,13 @@ public class ConverterService {
   }
 
   public CapacityResponseDTO convertCapacityToResponseDTO(Capacity capacity) {
-    return new CapacityResponseDTO(capacity.getId(), capacity.getEnergySource().toString(), capacity.getCapacityAmount(),
+    return new CapacityResponseDTO(capacity.getId(), capacity.getEnergySource().toString(),
+        capacity.getCapacityAmount(),
         capacity.getAvailable(), capacity.getPrice(),
-        timeService.longToLocalDateTime(capacity.getCapacityFromTime()),
-        timeService.longToLocalDateTime(capacity.getCapacityToTime()));
+        timeService.longToLocalDateTime(capacity.getCapacityFromTime())
+            .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:00")),
+        timeService.longToLocalDateTime(capacity.getCapacityToTime())
+            .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:00")));
   }
 
   public CapacityListResponseDTO convertCapacityToCapacityListDTO(List<Capacity> capacityList) {

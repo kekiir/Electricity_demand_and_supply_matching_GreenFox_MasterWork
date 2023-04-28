@@ -13,7 +13,7 @@ public class CapacityResponseDTO {
   private Double amountMW;
   private Double available;
   private Double price;
-  private LocalDateTime fromTime;
-  private LocalDateTime toTime;
+  private String fromTime;
+  private String toTime;
 
 }
