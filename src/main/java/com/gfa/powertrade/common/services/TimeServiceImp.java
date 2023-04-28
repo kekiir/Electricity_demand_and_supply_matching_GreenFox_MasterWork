@@ -50,7 +50,7 @@ public class TimeServiceImp implements TimeService {
 
   public void validateDateRange(LocalDateTime from, LocalDateTime to, LocalDateTime tomorrowMidnight,
       LocalDateTime afterTomorrowMidnight) {
-    String tomorrowDate = LocalDateTime.now().plusDays(1).format(DateTimeFormatter.ofPattern("yyyy" + "-MM-dd"));
+    String tomorrowDate = LocalDateTime.now().plusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     if (!from.isAfter(tomorrowMidnight.minusNanos(1)) || !to.isBefore(afterTomorrowMidnight.plusNanos(1))) {
       throw new IllegalArgumentException("Dates accepted only for tomorrow(" + tomorrowDate + ").");
     }

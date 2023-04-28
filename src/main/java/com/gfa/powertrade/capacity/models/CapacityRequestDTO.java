@@ -1,9 +1,11 @@
 package com.gfa.powertrade.capacity.models;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import javax.validation.constraints.*;
 
 @Data
+@AllArgsConstructor
 public class CapacityRequestDTO {
 
   @NotBlank(message = "energySource: Energy source is required.")
