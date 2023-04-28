@@ -62,6 +62,7 @@ public class CapacityServiceImp implements CapacityService {
         .orElseThrow(() -> new IdNotFoundException());
     capacityBelongsToSupplier(capacity, supplier.getId());
     timeService.validateGivenDates(capacityUpdateRequestDTO.getFromTime(), capacityUpdateRequestDTO.getToTime());
+    powerQuantityService.updatePowerQuantities(capacityUpdateRequestDTO,capacity);
     updataCapacity(capacityUpdateRequestDTO, capacity);
     return converterService.convertCapacityToResponseDTO(capacityRepository.save(capacity));
   }
@@ -73,8 +74,8 @@ public class CapacityServiceImp implements CapacityService {
     capacity.setCapacityAmount(capacityUpdateRequestDTO.getAmountMW());
     capacity.setPrice(capacityUpdateRequestDTO.getPrice());
     capacity.setEnergySource(EnergySource.valueOf(capacityUpdateRequestDTO.getEnergySource()));
-    capacity.setCapacityFromTime(timeService.localDateTimeTolong(LocalDateTime.parse(capacityFromTimeString)));
-    capacity.setCapacityToTime(timeService.localDateTimeTolong(LocalDateTime.parse(capacityToTimeString)));
+    capacity.setCapacityFromTime(timeService.StringToLong(capacityFromTimeString));
+    capacity.setCapacityToTime(timeService.StringToLong(capacityToTimeString));
 
   }
 
@@ -93,7 +94,7 @@ public class CapacityServiceImp implements CapacityService {
     checkCorrectEnergySource(capacityRequestDTO.getEnergySource());
     Capacity capacity = setCapacityVariables(capacityRequestDTO, user);
     capacityRepository.save(capacity);
-    powerQuantityService.createPowreQuantities(capacity);
+    powerQuantityService.createPowreQuantities(capacity, capacity.getCapacityFromTime(), capacity.getCapacityToTime());
     return converterService.convertCapacityToResponseDTO(capacityRepository.save(capacity));
   }
 

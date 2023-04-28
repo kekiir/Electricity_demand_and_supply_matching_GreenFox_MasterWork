@@ -59,4 +59,10 @@ public class TimeServiceImp implements TimeService {
     }
   }
 
+  public Long StringToLong(String timeString){
+    return localDateTimeTolong(LocalDateTime.parse(timeString));
+  }
+
+
+
 }
