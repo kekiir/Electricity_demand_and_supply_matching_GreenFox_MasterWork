@@ -19,6 +19,10 @@ public interface PowerQuantityService {
 
   void deletePowerQuantitiesDependingOnFromTime(Capacity capacity, Long updatedCapacityFromTime);
 
+  void deletePowerQuantities(Capacity capacity, Long updatedCapacityFromTime,
+      Long updatedCapacityToTime);
+
+
 
   void updatePowerQuantitiesDependingOnToTime(CapacityUpdateRequestDTO capacityUpdateRequestDTO, Capacity capacity);
 

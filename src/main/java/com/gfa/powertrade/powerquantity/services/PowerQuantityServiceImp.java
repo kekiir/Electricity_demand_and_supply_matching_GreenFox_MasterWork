@@ -12,6 +12,9 @@ import com.gfa.powertrade.powerquantity.models.PowerQuantity;
 import com.gfa.powertrade.powerquantity.repository.PowerQuantityRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -58,9 +61,21 @@ public class PowerQuantityServiceImp implements PowerQuantityService {
 
   @Override
   public void updatePowerQuantities(CapacityUpdateRequestDTO capacityUpdateRequestDTO, Capacity capacity) {
+    Long updatedCapacityFromTime = timeService.StringToLong(capacityUpdateRequestDTO.getFromTime());
+    Long updatedCapacityToTime = timeService.StringToLong(capacityUpdateRequestDTO.getToTime());
 
-    updatePowerQuantitiesDependingOnFromTime(capacityUpdateRequestDTO, capacity);
-    updatePowerQuantitiesDependingOnToTime(capacityUpdateRequestDTO, capacity);
+    if (updatedCapacityFromTime < capacity.getCapacityFromTime())
+      createPowerQuantitiesDependingOnFromTime(capacity, updatedCapacityFromTime);
+
+    if (capacity.getCapacityToTime() < updatedCapacityToTime)
+      createPowreQuantitiesDependingOnToTime(capacity, updatedCapacityToTime);
+
+    if (updatedCapacityFromTime < capacity.getCapacityFromTime() || updatedCapacityToTime < capacity.getCapacityToTime()) {
+      deletePowerQuantities(capacity, updatedCapacityFromTime, updatedCapacityToTime);
+    }
+
+    //updatePowerQuantitiesDependingOnFromTime(capacityUpdateRequestDTO, capacity);
+    //updatePowerQuantitiesDependingOnToTime(capacityUpdateRequestDTO, capacity);
   }
 
   @Override
@@ -82,12 +97,32 @@ public class PowerQuantityServiceImp implements PowerQuantityService {
 
   }
 
-  public void deletePowerQuantitiesDependingOnFromTime(Capacity capacity, Long updatedCapacityFromTime) {
+  @Transactional
+  public void deletePowerQuantities(Capacity capacity, Long updatedCapacityFromTime,
+      Long updatedCapacityToTime) {
+    List<PowerQuantity> deletedPowrQuantites = new ArrayList<>();
     for (PowerQuantity pq : capacity.getPowerQuantityList()) {
-      if (updatedCapacityFromTime > pq.getPowerQuantityFromTime()) {
-        powerQuantityRepository.delete(pq);
+      if (updatedCapacityFromTime > pq.getPowerQuantityFromTime()
+          || updatedCapacityToTime < pq.getPowerQuantityToTime()) {
+        deletedPowrQuantites.add(pq);
       }
     }
+    powerQuantityRepository.deleteInBatch(deletedPowrQuantites);
+    capacity.getPowerQuantityList().removeAll(deletedPowrQuantites);
+    capacityRepository.save(capacity);
+  }
+
+  @Transactional
+  public void deletePowerQuantitiesDependingOnFromTime(Capacity capacity, Long updatedCapacityFromTime) {
+    List<PowerQuantity> deletedPowrQuantites = new ArrayList<>();
+    for (PowerQuantity pq : capacity.getPowerQuantityList()) {
+      if (updatedCapacityFromTime > pq.getPowerQuantityFromTime()) {
+        deletedPowrQuantites.add(pq);
+      }
+    }
+    powerQuantityRepository.deleteInBatch(deletedPowrQuantites);
+    capacity.getPowerQuantityList().removeAll(deletedPowrQuantites);
+    capacityRepository.save(capacity);
   }
 
   public void updatePowerQuantitiesDependingOnToTime(CapacityUpdateRequestDTO capacityUpdateRequestDTO,
@@ -107,12 +142,19 @@ public class PowerQuantityServiceImp implements PowerQuantityService {
 
   }
 
+  @Transactional
   public void deletePowreQuantitiesDependingOnToTime(Capacity capacity, Long updatedCapacityToTime) {
+    List<PowerQuantity> deletedPowrQuantites = new ArrayList<>();
+
     for (PowerQuantity pq : capacity.getPowerQuantityList()) {
-      if (updatedCapacityToTime < pq.getPowerQuantityFromTime()) {
-        powerQuantityRepository.delete(pq);
+      if (updatedCapacityToTime < pq.getPowerQuantityToTime()) {
+        deletedPowrQuantites.add(pq);
       }
     }
+    powerQuantityRepository.deleteInBatch(deletedPowrQuantites);
+    capacity.getPowerQuantityList().removeAll(deletedPowrQuantites);
+    capacityRepository.save(capacity);
+
   }
 
 }
