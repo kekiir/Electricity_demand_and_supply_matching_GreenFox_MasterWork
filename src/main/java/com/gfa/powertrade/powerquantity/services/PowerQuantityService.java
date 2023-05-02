@@ -12,22 +12,15 @@ public interface PowerQuantityService {
 
   void updatePowerQuantities(CapacityUpdateRequestDTO capacityUpdateRequestDTO, Capacity capacity);
 
-
-  void updatePowerQuantitiesDependingOnFromTime(CapacityUpdateRequestDTO capacityUpdateRequestDTO, Capacity capacity);
-
   void createPowerQuantitiesDependingOnFromTime(Capacity capacity, Long updatedCapacityFromTime);
 
-  void deletePowerQuantitiesDependingOnFromTime(Capacity capacity, Long updatedCapacityFromTime);
+  void createPowreQuantitiesDependingOnToTime(Capacity capacity, Long updatedCapacityToTime);
 
   void deletePowerQuantities(Capacity capacity, Long updatedCapacityFromTime,
       Long updatedCapacityToTime);
 
 
 
-  void updatePowerQuantitiesDependingOnToTime(CapacityUpdateRequestDTO capacityUpdateRequestDTO, Capacity capacity);
 
-  void createPowreQuantitiesDependingOnToTime(Capacity capacity, Long updatedCapacityToTime);
-
-  void deletePowreQuantitiesDependingOnToTime(Capacity capacity, Long updatedCapacityToTime);
 
 }

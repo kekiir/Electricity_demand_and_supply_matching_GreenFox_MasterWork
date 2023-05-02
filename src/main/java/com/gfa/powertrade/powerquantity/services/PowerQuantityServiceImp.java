@@ -70,23 +70,9 @@ public class PowerQuantityServiceImp implements PowerQuantityService {
     if (capacity.getCapacityToTime() < updatedCapacityToTime)
       createPowreQuantitiesDependingOnToTime(capacity, updatedCapacityToTime);
 
-    if (updatedCapacityFromTime < capacity.getCapacityFromTime() || updatedCapacityToTime < capacity.getCapacityToTime()) {
+    if ( capacity.getCapacityFromTime() < updatedCapacityFromTime
+        || updatedCapacityToTime < capacity.getCapacityToTime()) {
       deletePowerQuantities(capacity, updatedCapacityFromTime, updatedCapacityToTime);
-    }
-
-    //updatePowerQuantitiesDependingOnFromTime(capacityUpdateRequestDTO, capacity);
-    //updatePowerQuantitiesDependingOnToTime(capacityUpdateRequestDTO, capacity);
-  }
-
-  @Override
-  public void updatePowerQuantitiesDependingOnFromTime(CapacityUpdateRequestDTO capacityUpdateRequestDTO,
-      Capacity capacity) {
-
-    Long updatedCapacityFromTime = timeService.StringToLong(capacityUpdateRequestDTO.getFromTime());
-    if (updatedCapacityFromTime < capacity.getCapacityFromTime()) {
-      createPowerQuantitiesDependingOnFromTime(capacity, updatedCapacityFromTime);
-    } else {
-      deletePowerQuantitiesDependingOnFromTime(capacity, updatedCapacityFromTime);
     }
 
   }
@@ -94,6 +80,12 @@ public class PowerQuantityServiceImp implements PowerQuantityService {
   @Override
   public void createPowerQuantitiesDependingOnFromTime(Capacity capacity, Long updatedCapacityFromTime) {
     createPowreQuantities(capacity, updatedCapacityFromTime, capacity.getCapacityFromTime());
+
+  }
+
+  @Override
+  public void createPowreQuantitiesDependingOnToTime(Capacity capacity, Long updatedCapacityToTime) {
+    createPowreQuantities(capacity, capacity.getCapacityToTime(), updatedCapacityToTime);
 
   }
 
@@ -110,51 +102,6 @@ public class PowerQuantityServiceImp implements PowerQuantityService {
     powerQuantityRepository.deleteInBatch(deletedPowrQuantites);
     capacity.getPowerQuantityList().removeAll(deletedPowrQuantites);
     capacityRepository.save(capacity);
-  }
-
-  @Transactional
-  public void deletePowerQuantitiesDependingOnFromTime(Capacity capacity, Long updatedCapacityFromTime) {
-    List<PowerQuantity> deletedPowrQuantites = new ArrayList<>();
-    for (PowerQuantity pq : capacity.getPowerQuantityList()) {
-      if (updatedCapacityFromTime > pq.getPowerQuantityFromTime()) {
-        deletedPowrQuantites.add(pq);
-      }
-    }
-    powerQuantityRepository.deleteInBatch(deletedPowrQuantites);
-    capacity.getPowerQuantityList().removeAll(deletedPowrQuantites);
-    capacityRepository.save(capacity);
-  }
-
-  public void updatePowerQuantitiesDependingOnToTime(CapacityUpdateRequestDTO capacityUpdateRequestDTO,
-      Capacity capacity) {
-
-    Long updatedCapacityToTime = timeService.StringToLong(capacityUpdateRequestDTO.getToTime());
-    if (capacity.getCapacityToTime() < updatedCapacityToTime) {
-      createPowreQuantitiesDependingOnToTime(capacity, updatedCapacityToTime);
-    } else {
-      deletePowreQuantitiesDependingOnToTime(capacity, updatedCapacityToTime);
-    }
-  }
-
-  @Override
-  public void createPowreQuantitiesDependingOnToTime(Capacity capacity, Long updatedCapacityToTime) {
-    createPowreQuantities(capacity, capacity.getCapacityToTime(), updatedCapacityToTime);
-
-  }
-
-  @Transactional
-  public void deletePowreQuantitiesDependingOnToTime(Capacity capacity, Long updatedCapacityToTime) {
-    List<PowerQuantity> deletedPowrQuantites = new ArrayList<>();
-
-    for (PowerQuantity pq : capacity.getPowerQuantityList()) {
-      if (updatedCapacityToTime < pq.getPowerQuantityToTime()) {
-        deletedPowrQuantites.add(pq);
-      }
-    }
-    powerQuantityRepository.deleteInBatch(deletedPowrQuantites);
-    capacity.getPowerQuantityList().removeAll(deletedPowrQuantites);
-    capacityRepository.save(capacity);
-
   }
 
 }
