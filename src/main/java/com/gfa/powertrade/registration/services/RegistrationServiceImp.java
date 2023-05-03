@@ -13,7 +13,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -23,8 +22,8 @@ public class RegistrationServiceImp implements RegistrationService {
   private ConsumerRepository consumerRepository;
 
   @Override
-  public RegistrationResponseDTO saveNewUser(RegistrationRequestDTO reg) throws
-      AlreadyTakenUsernameException, InvalidPasswordException {
+  public RegistrationResponseDTO saveNewUser(RegistrationRequestDTO reg) throws AlreadyTakenUsernameException,
+    InvalidPasswordException {
     validateRegistration(reg);
     if (reg.getUserType().toUpperCase().equals(UserType.SUPPLIER.toString())) {
       return saveSupplier(reg);
@@ -35,11 +34,8 @@ public class RegistrationServiceImp implements RegistrationService {
   }
 
   public RegistrationResponseDTO saveSupplier(RegistrationRequestDTO reg) {
-    Supplier supplier = Supplier.builder()
-        .username(reg.getUsername())
-        .password(hashPassword(reg.getPassword()))
-        .capacityList(new ArrayList<>())
-        .build();
+    Supplier supplier = Supplier.builder().username(reg.getUsername())
+      .password(hashPassword(reg.getPassword())).capacityList(new ArrayList<>()).build();
     supplier.setUserType(UserType.SUPPLIER);
     supplierRepository.save(supplier);
     return convert(supplier);
@@ -47,9 +43,7 @@ public class RegistrationServiceImp implements RegistrationService {
 
   public RegistrationResponseDTO saveConsumer(RegistrationRequestDTO reg) {
     Consumer consumer = Consumer.builder().username(reg.getUsername())
-        .password(hashPassword(reg.getPassword()))
-        .demandList(new ArrayList<>())
-        .build();
+      .password(hashPassword(reg.getPassword())).demandList(new ArrayList<>()).build();
     consumer.setUserType(UserType.CONSUMER);
     consumerRepository.save(consumer);
     return convert(consumer);
@@ -57,13 +51,13 @@ public class RegistrationServiceImp implements RegistrationService {
 
   @Override
   public void validateRegistration(RegistrationRequestDTO reg) throws AlreadyTakenUsernameException,
-      InvalidPasswordException, InvalidUserTypeException {
+    InvalidPasswordException, InvalidUserTypeException {
 
-    if (!reg.getUserType().toUpperCase().equals(UserType.SUPPLIER.toString())
-        && !reg.getUserType().toUpperCase().equals(UserType.CONSUMER.toString()))
+    if (!reg.getUserType().toUpperCase().equals(
+      UserType.SUPPLIER.toString()) && !reg.getUserType().toUpperCase().equals(UserType.CONSUMER.toString()))
       throw new InvalidUserTypeException();
-    if (supplierRepository.findByUsername(reg.getUsername()).isPresent()
-        || consumerRepository.findByUsername(reg.getUsername()).isPresent())
+    if (supplierRepository.findByUsername(reg.getUsername()).isPresent() || consumerRepository.findByUsername(
+      reg.getUsername()).isPresent())
       throw new AlreadyTakenUsernameException("Username is already taken.");
     if (reg.getPassword() == null || reg.getPassword().trim().length() < 8)
       throw new InvalidPasswordException("Password must be at least 8 characters.");
@@ -76,7 +70,8 @@ public class RegistrationServiceImp implements RegistrationService {
   }
 
   public RegistrationResponseDTO convert(User user) {
-    if (user == null) return null;
+    if (user == null)
+      return null;
     RegistrationResponseDTO responseDTO = new RegistrationResponseDTO();
     responseDTO.setId(user.getId());
     responseDTO.setUsername(user.getUsername());

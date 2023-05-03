@@ -6,14 +6,14 @@ import java.util.List;
 
 @Data
 public class DemandListResponseDTO {
-  List<DemandResponseDTO> demandResponseDTOList;
+  List<DemandResponseDTO> demandResponseListDTO;
 
   public DemandListResponseDTO() {
-    demandResponseDTOList = new ArrayList<>();
+    demandResponseListDTO = new ArrayList<>();
   }
 
-  public DemandListResponseDTO(List<DemandResponseDTO> demandResponseDTOList) {
-    this.demandResponseDTOList = demandResponseDTOList;
+  public DemandListResponseDTO(List<DemandResponseDTO> demandResponseListDTO) {
+    this.demandResponseListDTO = demandResponseListDTO;
   }
 
 }

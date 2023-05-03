@@ -74,8 +74,8 @@ public class CapacityServiceImp implements CapacityService {
     capacity.setCapacityAmount(capacityUpdateRequestDTO.getAmountMW());
     capacity.setPrice(capacityUpdateRequestDTO.getPrice());
     capacity.setEnergySource(EnergySource.valueOf(capacityUpdateRequestDTO.getEnergySource()));
-    capacity.setCapacityFromTime(timeService.StringToLong(capacityFromTimeString));
-    capacity.setCapacityToTime(timeService.StringToLong(capacityToTimeString));
+    capacity.setCapacityFromTime(timeService.stringToLong(capacityFromTimeString));
+    capacity.setCapacityToTime(timeService.stringToLong(capacityToTimeString));
 
   }
 

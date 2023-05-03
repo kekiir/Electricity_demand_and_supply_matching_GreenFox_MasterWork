@@ -34,9 +34,9 @@ public class PowerQuantityServiceImp implements PowerQuantityService {
     Long firstPowerQuiantityToTime = firstPowerQuantityFromTime + BalancedHourServiceImp.oneHourInMilliSeconds;
     for (int i = 1; i <= numberOfbalancedHours; i++) {
       PowerQuantity newPowerQuantity = createNewPowerQuantity(capacity, firstPowerQuantityFromTime,
-          firstPowerQuiantityToTime);
+        firstPowerQuiantityToTime);
       BalancedHour balancedHour =
-          balancedHourService.findOrCreateIfNotfoundBalancedHour(firstPowerQuantityFromTime, firstPowerQuiantityToTime);
+        balancedHourService.findOrCreateIfNotfoundBalancedHour(firstPowerQuantityFromTime, firstPowerQuiantityToTime);
       newPowerQuantity.setBalancedHour(balancedHour);
       balancedHourRepository.save(balancedHour);
       powerQuantityRepository.save(newPowerQuantity);
@@ -52,17 +52,17 @@ public class PowerQuantityServiceImp implements PowerQuantityService {
   @Override
   public PowerQuantity createNewPowerQuantity(Capacity capacity, Long fromTime, Long toTime) {
     return PowerQuantity.builder()
-        .capacity(capacity)
-        .powerQuantityAmount(capacity.getCapacityAmount())
-        .powerQuantityFromTime(fromTime)
-        .powerQuantityToTime(toTime)
-        .build();
+      .capacity(capacity)
+      .powerQuantityAmount(capacity.getCapacityAmount())
+      .powerQuantityFromTime(fromTime)
+      .powerQuantityToTime(toTime)
+      .build();
   }
 
   @Override
   public void updatePowerQuantities(CapacityUpdateRequestDTO capacityUpdateRequestDTO, Capacity capacity) {
-    Long updatedCapacityFromTime = timeService.StringToLong(capacityUpdateRequestDTO.getFromTime());
-    Long updatedCapacityToTime = timeService.StringToLong(capacityUpdateRequestDTO.getToTime());
+    Long updatedCapacityFromTime = timeService.stringToLong(capacityUpdateRequestDTO.getFromTime());
+    Long updatedCapacityToTime = timeService.stringToLong(capacityUpdateRequestDTO.getToTime());
 
     if (updatedCapacityFromTime < capacity.getCapacityFromTime())
       createPowerQuantitiesDependingOnFromTime(capacity, updatedCapacityFromTime);
@@ -70,8 +70,8 @@ public class PowerQuantityServiceImp implements PowerQuantityService {
     if (capacity.getCapacityToTime() < updatedCapacityToTime)
       createPowreQuantitiesDependingOnToTime(capacity, updatedCapacityToTime);
 
-    if ( capacity.getCapacityFromTime() < updatedCapacityFromTime
-        || updatedCapacityToTime < capacity.getCapacityToTime()) {
+    if (capacity.getCapacityFromTime() < updatedCapacityFromTime
+      || updatedCapacityToTime < capacity.getCapacityToTime()) {
       deletePowerQuantities(capacity, updatedCapacityFromTime, updatedCapacityToTime);
     }
 
@@ -91,11 +91,11 @@ public class PowerQuantityServiceImp implements PowerQuantityService {
 
   @Transactional
   public void deletePowerQuantities(Capacity capacity, Long updatedCapacityFromTime,
-      Long updatedCapacityToTime) {
+    Long updatedCapacityToTime) {
     List<PowerQuantity> deletedPowrQuantites = new ArrayList<>();
     for (PowerQuantity pq : capacity.getPowerQuantityList()) {
       if (updatedCapacityFromTime > pq.getPowerQuantityFromTime()
-          || updatedCapacityToTime < pq.getPowerQuantityToTime()) {
+        || updatedCapacityToTime < pq.getPowerQuantityToTime()) {
         deletedPowrQuantites.add(pq);
       }
     }

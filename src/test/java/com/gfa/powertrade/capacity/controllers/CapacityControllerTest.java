@@ -9,8 +9,6 @@ import com.gfa.powertrade.supplier.models.Supplier;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,8 +21,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
-import static org.hamcrest.Matchers.any;
-import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
@@ -61,13 +57,13 @@ class CapacityControllerTest {
     tomorrow14Am = LocalDateTime.now().plusDays(1).withHour(14).withMinute(0)
         .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:00"))
         .toString();
-    authCreateCapacity = new UsernamePasswordAuthenticationToken(testSupplier, null,null);
+    authCreateCapacity = new UsernamePasswordAuthenticationToken(testSupplier, null, null);
   }
 
   @Test
   void createCapacity() throws Exception {
     CapacityRequestDTO capacityRequestDTO =
-        new CapacityRequestDTO("WIND", 50d, 45d,tomorrow12Am,tomorrow14Am );
+        new CapacityRequestDTO("WIND", 50d, 45d, tomorrow12Am, tomorrow14Am);
 
     mockMvc.perform(post("/supplier/capacity")
             .contentType(MediaType.APPLICATION_JSON)
@@ -79,7 +75,6 @@ class CapacityControllerTest {
         .andExpect(jsonPath("$.price").value(45))
         .andExpect(jsonPath("$.fromTime").isString())
         .andExpect(jsonPath("$.toTime").isString());
-
 
   }
 

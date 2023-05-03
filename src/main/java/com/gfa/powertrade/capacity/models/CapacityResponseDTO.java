@@ -2,7 +2,6 @@ package com.gfa.powertrade.capacity.models;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor

@@ -23,15 +23,15 @@ public class DemandQuantityServiceImp implements DemandQuantityService {
   @Override
   public void createDemandQuantities(Demand demand) {
     Long numberOfbalancedHours = balancedHourService.calculateNumberOfBallanceHours(demand.getDemandToTime(),
-        demand.getDemandFromTime());
+      demand.getDemandFromTime());
     Long firstDemandQuantityFromTime = demand.getDemandFromTime();
     Long firstDemandQuiantityToTime = firstDemandQuantityFromTime + BalancedHourServiceImp.oneHourInMilliSeconds;
     for (int i = 1; i <= numberOfbalancedHours; i++) {
       DemandQuantity newDemandQuantity = createNewDemandQuantity(demand, firstDemandQuantityFromTime,
+        firstDemandQuiantityToTime);
+      BalancedHour balancedHour =
+        balancedHourService.findOrCreateIfNotfoundBalancedHour(firstDemandQuantityFromTime,
           firstDemandQuiantityToTime);
-      BalancedHour balancedHour  =
-          balancedHourService.findOrCreateIfNotfoundBalancedHour(firstDemandQuantityFromTime,
-              firstDemandQuiantityToTime);
       newDemandQuantity.setBalancedHour(balancedHour);
       balancedHourRepository.save(balancedHour);
       demandQuantityRepository.save(newDemandQuantity);
@@ -41,17 +41,16 @@ public class DemandQuantityServiceImp implements DemandQuantityService {
       firstDemandQuiantityToTime += BalancedHourServiceImp.oneHourInMilliSeconds;
     }
     demandRepository.save(demand);
-
   }
 
   @Override
   public DemandQuantity createNewDemandQuantity(Demand demand, Long fromTime, Long toTime) {
     return DemandQuantity.builder()
-        .demand(demand)
-        .demandQuantityAmount(demand.getDemandAmount())
-        .demandQuantityFromTime(fromTime)
-        .demandQuantityToTime(toTime)
-        .build();
+      .demand(demand)
+      .demandQuantityAmount(demand.getDemandAmount())
+      .demandQuantityFromTime(fromTime)
+      .demandQuantityToTime(toTime)
+      .build();
   }
 
 }

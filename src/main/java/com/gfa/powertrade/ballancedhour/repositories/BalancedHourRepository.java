@@ -14,7 +14,10 @@ public interface BalancedHourRepository extends CrudRepository<BalancedHour, Int
   @Override
   List<BalancedHour> findAll();
 
-  @Query("SELECT bh FROM BalancedHour bh WHERE bh.balanced_hour_from_time = :fromTime")
-  Optional<BalancedHour> findByBalancedHourFromTime(@Param("fromTime") Long balancedHourFromTime);
+//  @Query("SELECT bh FROM BalancedHour bh WHERE bh.balanced_hour_from_time = :fromTime")
+//  Optional<BalancedHour> findByBalancedHourFromTime(@Param("fromTime") Long balancedHourFromTime);
+
+
+  Optional<BalancedHour> findByBalancedHourFromTime(Long balancedHourFromTime);
 
 }

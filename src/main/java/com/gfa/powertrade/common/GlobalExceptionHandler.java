@@ -14,19 +14,17 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
   @Override
-  protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
-      HttpHeaders headers, HttpStatus status, WebRequest request) {
+  protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers,
+      HttpStatus status, WebRequest request) {
     ErrorListResponseDTO errorListResponseDTO = new ErrorListResponseDTO();
-    List<String> errors = ex.getBindingResult()
-        .getFieldErrors()
-        .stream()
+    List<String> errors = ex.getBindingResult().getFieldErrors().stream()
         .map(DefaultMessageSourceResolvable::getDefaultMessage)
         .collect(Collectors.toList());
     errorListResponseDTO.setMessage(errors);
@@ -37,12 +35,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
   @Override
   @ApiResponse(responseCode = "423", description = "JSON is not readable.",
       content = @Content(schema = @Schema(implementation = ErrorDTO.class)))
-  protected ResponseEntity<Object> handleHttpMessageNotReadable(
-      HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+  protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers,
+      HttpStatus status, WebRequest request) {
     ErrorDTO errorDTO = new ErrorDTO("JSON is not readable.");
 
     return new ResponseEntity<>(errorDTO, HttpStatus.BAD_REQUEST);
   }
+
   @ApiResponse(responseCode = "401", description = "id doesn't belong to logged in player",
       content = @Content(schema = @Schema(implementation = ErrorDTO.class)))
   @ExceptionHandler(LoginFailureException.class)
@@ -50,9 +49,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     ErrorDTO errorDTO = new ErrorDTO(ex.getMessage());
     return ResponseEntity.status(401).body(errorDTO);
   }
-
-
-
 
   public ResponseEntity<ErrorDTO> handleNotAcceptable(RuntimeException ex) {
     ErrorDTO response = new ErrorDTO(ex.getMessage());
@@ -65,9 +61,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
   }
 
   public List<String> collectErrorMessages(MethodArgumentNotValidException ex) {
-    return ex.getBindingResult().getFieldErrors().stream()
-        .map(DefaultMessageSourceResolvable::getDefaultMessage)
-        .collect(Collectors.toList());
+    return ex.getBindingResult().getFieldErrors().stream().map(
+      DefaultMessageSourceResolvable::getDefaultMessage).collect(Collectors.toList());
   }
 
   public String concatErrorMessages(List<String> errorMessages) {
@@ -111,10 +106,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
   }
 
   private List<String> collectWrongField(List<String> errorMessages) {
-    return errorMessages.stream()
-        .map(s -> s.split(" "))
-        .map(s -> s[0])
-        .collect(Collectors.toList());
+    return errorMessages.stream().map(s -> s.split(" ")).map(s -> s[0]).collect(Collectors.toList());
   }
 
 }

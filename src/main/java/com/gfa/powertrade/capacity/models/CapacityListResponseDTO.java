@@ -6,14 +6,14 @@ import java.util.List;
 
 @Data
 public class CapacityListResponseDTO {
-  List<CapacityResponseDTO> capacityResponseDTOList;
+  List<CapacityResponseDTO> capacityResponseListDTO;
 
   public CapacityListResponseDTO() {
-    capacityResponseDTOList = new ArrayList<>();
+    capacityResponseListDTO = new ArrayList<>();
   }
 
-  public CapacityListResponseDTO(List<CapacityResponseDTO> capacityResponseDTOList) {
-    this.capacityResponseDTOList = capacityResponseDTOList;
+  public CapacityListResponseDTO(List<CapacityResponseDTO> capacityResponseListDTO) {
+    this.capacityResponseListDTO = capacityResponseListDTO;
   }
 
 }

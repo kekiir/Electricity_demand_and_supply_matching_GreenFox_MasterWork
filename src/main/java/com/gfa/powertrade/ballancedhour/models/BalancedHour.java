@@ -22,18 +22,18 @@ public class BalancedHour {
   @Column(name = "balanced_hour_id")
   private Integer id;
   @Column(name = "balanced_hour_price")
-  private Double balanced_hour_price;
+  private Double balancedHourPrice;
 
   @Column(name = "balanced_hour_from_time")
-  private Long balanced_hour_from_time;
+  private Long balancedHourFromTime;
   @Column(name = "balanced_hour_to_time")
-  private Long balanced_hour_to_time;
+  private Long balancedHourToTime;
 
-  @OneToMany(mappedBy = "balancedHour", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "balancedHour", cascade = CascadeType.PERSIST)
   @LazyCollection(LazyCollectionOption.FALSE)
   private List<PowerQuantity> powerQuantityList;
 
-  @OneToMany(mappedBy = "balancedHour", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "balancedHour", cascade = CascadeType.PERSIST)
   @LazyCollection(LazyCollectionOption.FALSE)
   private List<DemandQuantity> demandQuantityList;
 

@@ -30,10 +30,10 @@ public class TimeServiceImp implements TimeService {
     LocalDateTime tomorrowMidnight =
         LocalDateTime.now().plusDays(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
 
-    LocalDateTime afterTomorrowMidnight =
-        LocalDateTime.now().plusDays(2).withHour(0).withMinute(0).withSecond(0).withNano(0);
     if (now.isAfter(twoHourBeforeTodayMidnight) && now.isBefore(tomorrowMidnight))
       throw new IllegalArgumentException("Dates posting for tomorrow excepted until 22:00");
+    LocalDateTime afterTomorrowMidnight =
+        LocalDateTime.now().plusDays(2).withHour(0).withMinute(0).withSecond(0).withNano(0);
     from = validateDateFormat(fromString);
     to = validateDateFormat(toString);
     validateDateRange(from, to, tomorrowMidnight, afterTomorrowMidnight);
@@ -59,10 +59,8 @@ public class TimeServiceImp implements TimeService {
     }
   }
 
-  public Long StringToLong(String timeString){
+  public Long stringToLong(String timeString) {
     return localDateTimeTolong(LocalDateTime.parse(timeString));
   }
-
-
 
 }

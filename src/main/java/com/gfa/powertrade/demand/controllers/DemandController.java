@@ -53,7 +53,8 @@ public class DemandController {
     User user = ((User) auth.getPrincipal());
     try {
       return ResponseEntity.ok().body(demandService.updateDemand(demandUpdateRequestDTO, user));
-    } catch (IdNotFoundException | IllegalArgumentException | InvalidEnergySourceException | ForbiddenActionException e) {
+    } catch (IdNotFoundException | IllegalArgumentException | InvalidEnergySourceException
+             | ForbiddenActionException e) {
       return ResponseEntity.status(406).body(new ErrorDTO(e.getMessage()));
     }
   }
