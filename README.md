@@ -89,22 +89,17 @@ http://localhost:8080/swagger-ui/index.html
 
 1. MySQL adatbázis használatához: 
 
-application properties file-ban a megfelelő beállítások használata illetve a következő környezeti változók felvétele:
+a .env és a .env.docker  file-ban a megfelelő beállítások használata.
 ```
-${DATABASE_URL}
-${DATABASE_USERNAME}
-${DATABASE_PASSWORD}
-```
+
 2. Jar file buildelése:
 ```
 ./gradlew build
    ```
 4. Docker container buildelése, futtatása: 
-
+Az applikáció gyökér könyvtárában allva:
 ```
-docker build
-
-docker run
+"docker compose up" parancsal indítható 
 ```
 
 Ezután az api a 8080-as porton lesz elérhető.
