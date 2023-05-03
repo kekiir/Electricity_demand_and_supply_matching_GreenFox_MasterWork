@@ -97,9 +97,9 @@ a .env és a .env.docker  file-ban a megfelelő beállítások használata.
 ./gradlew build
    ```
 4. Docker container buildelése, futtatása: 
-Az applikáció gyökér könyvtárában allva:
+Az applikáció gyökér könyvtárában allva a következő parancsal indítható:
 ```
-"docker compose up" parancsal indítható 
+docker compose up
 ```
 
 Ezután az api a 8080-as porton lesz elérhető.
