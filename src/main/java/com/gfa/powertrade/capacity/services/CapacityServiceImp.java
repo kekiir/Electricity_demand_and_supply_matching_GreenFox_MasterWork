@@ -7,6 +7,7 @@ import com.gfa.powertrade.common.services.ConverterService;
 import com.gfa.powertrade.common.services.TimeServiceImp;
 import com.gfa.powertrade.demand.models.DemandListResponseDTO;
 import com.gfa.powertrade.demand.repositories.DemandRepository;
+import com.gfa.powertrade.powerquantity.repository.PowerQuantityRepository;
 import com.gfa.powertrade.powerquantity.services.PowerQuantityService;
 import com.gfa.powertrade.supplier.models.Supplier;
 import com.gfa.powertrade.supplier.repository.SupplierRepository;
@@ -14,8 +15,10 @@ import com.gfa.powertrade.user.models.User;
 import com.gfa.powertrade.user.services.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,6 +32,7 @@ public class CapacityServiceImp implements CapacityService {
   private ConverterService converterService;
   private UserService userService;
   private PowerQuantityService powerQuantityService;
+PowerQuantityRepository powerQuantityRepository;
 
   public DemandListResponseDTO findDemandsForCapacity(int id, User user) {
     userService.validateSuppliertype(user);
@@ -42,6 +46,7 @@ public class CapacityServiceImp implements CapacityService {
         .collect(Collectors.toList()));
   }
 
+
   @Override
   public void deleteCapacityById(Integer id, User user) throws IdNotFoundException, IllegalArgumentException,
       ForbiddenActionException {
@@ -50,7 +55,12 @@ public class CapacityServiceImp implements CapacityService {
     Capacity capacity = capacityRepository.findById(id)
         .orElseThrow(() -> new IdNotFoundException());
     capacityBelongsToSupplier(capacity, supplier.getId());
-    capacityRepository.delete(capacity);
+
+    powerQuantityRepository.deleteInBatch(capacity.getPowerQuantityList());
+    capacity.getPowerQuantityList().removeAll(capacity.getPowerQuantityList());
+    supplier.getCapacityList().removeIf(c -> c.getId().equals(id));
+    supplierRepository.save(supplier);
+    capacityRepository.deleteById(id);
 
   }
 
