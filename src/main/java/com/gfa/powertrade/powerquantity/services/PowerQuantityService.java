@@ -6,7 +6,7 @@ import com.gfa.powertrade.powerquantity.models.PowerQuantity;
 
 public interface PowerQuantityService {
 
-  void createPowreQuantities(Capacity capacity, Long fromTime, Long toTime);
+  void createPowerQuantities(Capacity capacity, Long fromTime, Long toTime);
 
   PowerQuantity createNewPowerQuantity(Capacity capacity, Long fromTime, Long toTime);
 
@@ -14,7 +14,7 @@ public interface PowerQuantityService {
 
   void createPowerQuantitiesDependingOnFromTime(Capacity capacity, Long updatedCapacityFromTime);
 
-  void createPowreQuantitiesDependingOnToTime(Capacity capacity, Long updatedCapacityToTime);
+  void createPowerQuantitiesDependingOnToTime(Capacity capacity, Long updatedCapacityToTime);
 
   void deletePowerQuantities(Capacity capacity, Long updatedCapacityFromTime,
       Long updatedCapacityToTime);

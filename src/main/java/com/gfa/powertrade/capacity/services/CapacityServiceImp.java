@@ -104,7 +104,7 @@ PowerQuantityRepository powerQuantityRepository;
     checkCorrectEnergySource(capacityRequestDTO.getEnergySource());
     Capacity capacity = setCapacityVariables(capacityRequestDTO, user);
     capacityRepository.save(capacity);
-    powerQuantityService.createPowreQuantities(capacity, capacity.getCapacityFromTime(), capacity.getCapacityToTime());
+    powerQuantityService.createPowerQuantities(capacity, capacity.getCapacityFromTime(), capacity.getCapacityToTime());
     return converterService.convertCapacityToResponseDTO(capacityRepository.save(capacity));
   }
 

@@ -27,7 +27,7 @@ public class PowerQuantityServiceImp implements PowerQuantityService {
   private TimeService timeService;
 
   @Override
-  public void createPowreQuantities(Capacity capacity, Long fromTime, Long toTime) {
+  public void createPowerQuantities(Capacity capacity, Long fromTime, Long toTime) {
 
     Long numberOfbalancedHours = balancedHourService.calculateNumberOfBallanceHours(toTime, fromTime);
     Long firstPowerQuantityFromTime = fromTime;
@@ -68,7 +68,7 @@ public class PowerQuantityServiceImp implements PowerQuantityService {
       createPowerQuantitiesDependingOnFromTime(capacity, updatedCapacityFromTime);
 
     if (capacity.getCapacityToTime() < updatedCapacityToTime)
-      createPowreQuantitiesDependingOnToTime(capacity, updatedCapacityToTime);
+      createPowerQuantitiesDependingOnToTime(capacity, updatedCapacityToTime);
 
     if (capacity.getCapacityFromTime() < updatedCapacityFromTime
       || updatedCapacityToTime < capacity.getCapacityToTime()) {
@@ -79,13 +79,13 @@ public class PowerQuantityServiceImp implements PowerQuantityService {
 
   @Override
   public void createPowerQuantitiesDependingOnFromTime(Capacity capacity, Long updatedCapacityFromTime) {
-    createPowreQuantities(capacity, updatedCapacityFromTime, capacity.getCapacityFromTime());
+    createPowerQuantities(capacity, updatedCapacityFromTime, capacity.getCapacityFromTime());
 
   }
 
   @Override
-  public void createPowreQuantitiesDependingOnToTime(Capacity capacity, Long updatedCapacityToTime) {
-    createPowreQuantities(capacity, capacity.getCapacityToTime(), updatedCapacityToTime);
+  public void createPowerQuantitiesDependingOnToTime(Capacity capacity, Long updatedCapacityToTime) {
+    createPowerQuantities(capacity, capacity.getCapacityToTime(), updatedCapacityToTime);
 
   }
 

@@ -56,7 +56,7 @@ public class RegistrationServiceImp implements RegistrationService {
     if (!reg.getUserType().toUpperCase().equals(
       UserType.SUPPLIER.toString()) && !reg.getUserType().toUpperCase().equals(UserType.CONSUMER.toString()))
       throw new InvalidUserTypeException();
-    if (supplierRepository.findByUsername(reg.getUsername()).isPresent() || consumerRepository.findByUsername(
+    if (!supplierRepository.findByUsername(reg.getUsername()).isPresent() && !consumerRepository.findByUsername(
       reg.getUsername()).isPresent())
       throw new AlreadyTakenUsernameException("Username is already taken.");
     if (reg.getPassword() == null || reg.getPassword().trim().length() < 8)

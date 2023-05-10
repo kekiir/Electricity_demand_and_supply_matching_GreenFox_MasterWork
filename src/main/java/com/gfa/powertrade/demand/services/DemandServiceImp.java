@@ -10,6 +10,7 @@ import com.gfa.powertrade.consumers.models.Consumer;
 import com.gfa.powertrade.consumers.repositories.ConsumerRepository;
 import com.gfa.powertrade.demand.models.*;
 import com.gfa.powertrade.demand.repositories.DemandRepository;
+import com.gfa.powertrade.demandquantity.repositories.DemandQuantityRepository;
 import com.gfa.powertrade.demandquantity.services.DemandQuantityService;
 import com.gfa.powertrade.user.models.User;
 import com.gfa.powertrade.user.services.UserService;
@@ -31,6 +32,7 @@ public class DemandServiceImp implements DemandService {
   private ConverterService converterService;
   private UserService userService;
   private DemandQuantityService demandQuantityService;
+  private DemandQuantityRepository demandQuantityRepository;
 
   @Override
   public Object findCapacitiesForDemand(Integer id, User user) {
@@ -54,7 +56,12 @@ public class DemandServiceImp implements DemandService {
     Demand demand = demandRepository.findById(id)
         .orElseThrow(() -> new IdNotFoundException());
     demandBelongsToConsumer(demand, consumer.getId());
-    demandRepository.delete(demand);
+
+    demandQuantityRepository.deleteInBatch(demand.getDemandQuantityList());
+    demand.getDemandQuantityList().removeAll(demand.getDemandQuantityList());
+    consumer.getDemandList().removeIf(d -> d.getId().equals(id));
+    consumerRepository.save(consumer);
+    demandRepository.deleteById(id);
 
   }
 
@@ -65,6 +72,9 @@ public class DemandServiceImp implements DemandService {
         .orElseThrow(() -> new IdNotFoundException());
     demandBelongsToConsumer(demand, consumer.getId());
     timeService.validateGivenDates(demandUpdateRequestDTO.getFromTime(), demandUpdateRequestDTO.getToTime());
+
+   demandQuantityService.updateDemandQuantites(demandUpdateRequestDTO, demand);
+
     updataDemand(demandUpdateRequestDTO, demand);
     return converterService.convertDemandToResponseDTO(demandRepository.save(demand));
   }
@@ -92,7 +102,7 @@ public class DemandServiceImp implements DemandService {
     timeService.validateGivenDates(demandRequestDTO.getFromTime(), demandRequestDTO.getToTime());
     Demand demand = setDemandVariables(demandRequestDTO, user);
     demand = demandRepository.save(demand);
-    demandQuantityService.createDemandQuantities(demand);
+    demandQuantityService.createDemandQuantities(demand, demand.getDemandFromTime(), demand.getDemandToTime());
     return converterService.convertDemandToResponseDTO(demand);
   }
 

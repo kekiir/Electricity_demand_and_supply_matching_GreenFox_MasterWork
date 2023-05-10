@@ -16,12 +16,12 @@ public class CapacityRequestDTO {
   @NotNull(message = "Price is required.")
   private Double price;
 
-  @NotBlank(message = "from: 'From' date is requered.")
+  @NotBlank(message = "fromTime: 'fromTime' date is requered.")
   @Pattern(regexp = "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0]{2}$", message = "from: Required date pattern: "
       + "yyyy-MM-dd'T'HH:00")
   private String fromTime;
 
-  @NotBlank(message = "to: 'To' date is requered.")
+  @NotBlank(message = "toTime: 'toTime' date is requered.")
   @Pattern(regexp = "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0]{2}$", message = "to: Required date pattern: "
       + "yyyy-MM-dd'T'HH:00")
   private String toTime;
