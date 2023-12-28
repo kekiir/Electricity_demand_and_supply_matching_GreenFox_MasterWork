@@ -27,7 +27,6 @@ public class Capacity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "capacity_id")
   private Integer id;
-
   @Enumerated(EnumType.STRING)
   @Column(name = "energy_source",
       columnDefinition = "ENUM('COAL','GAS','NUCLEAR','HYDRO','WIND','SOLAR','BIO','WASTE')")
@@ -36,8 +35,6 @@ public class Capacity {
   private Double available;
   private Long capacityFromTime;
   private Long capacityToTime;
-
-
   private Double price;
   @JsonIgnore
   @ManyToOne
@@ -45,7 +42,6 @@ public class Capacity {
   @OneToMany(mappedBy = "capacity", cascade = CascadeType.ALL)
   @LazyCollection(LazyCollectionOption.FALSE)
   private List<Contract> contractList;
-
   @OneToMany(mappedBy = "capacity", cascade = CascadeType.ALL)
   @LazyCollection(LazyCollectionOption.FALSE)
   @OnDelete(action = OnDeleteAction.CASCADE)

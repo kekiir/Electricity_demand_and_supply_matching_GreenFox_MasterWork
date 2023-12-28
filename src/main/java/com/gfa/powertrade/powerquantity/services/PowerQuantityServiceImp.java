@@ -90,8 +90,7 @@ public class PowerQuantityServiceImp implements PowerQuantityService {
   }
 
   @Transactional
-  public void deletePowerQuantities(Capacity capacity, Long updatedCapacityFromTime,
-    Long updatedCapacityToTime) {
+  public void deletePowerQuantities(Capacity capacity, Long updatedCapacityFromTime, Long updatedCapacityToTime) {
     List<PowerQuantity> deletedPowrQuantites = new ArrayList<>();
     for (PowerQuantity pq : capacity.getPowerQuantityList()) {
       if (updatedCapacityFromTime > pq.getPowerQuantityFromTime()
