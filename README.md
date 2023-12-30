@@ -15,7 +15,7 @@ With PowerTrade, a database can be created where producers and consumers can lis
 ## Application Operation:
 ![DB_Schema](https://user-images.githubusercontent.com/105811419/232657598-7ca687ed-97ff-44c9-9bb1-dcd4b7186f4e.png)
 
-## Diagram illustrating the operation.
+## Diagram illustrating the operation:
 
 ![image](https://user-images.githubusercontent.com/105811419/232667247-eb7766a5-c66b-48d1-89c4-cabe3f06f24b.png)
 ### A működést szemléltető ábra.
