@@ -95,5 +95,4 @@ Run the following command in the root directory of the application:
 docker compose up
 ```
 
-Ezután az api a 8080-as porton lesz elérhető.
     
