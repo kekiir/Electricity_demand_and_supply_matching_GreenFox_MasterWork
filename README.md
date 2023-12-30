@@ -3,7 +3,7 @@
 
 ## _Next day power trading app_
 
-## Felhasznalasi terulet
+## Felhasznalasi terulet (Eng below)
 A villamos energia kereskedésnél nem csak az áram mennyisége, hanem az áram szállításának az idelye is rendkívül fontos. 
 Mivel a villamos energia tárolása rendkívül költséges, ezért fontos, hogy az áram termelése és fogyasztása ugyan akkor történjen,
 illetve hogy a termelt és fogyasztott villamosenergia mennyisége azonos legyen. 
@@ -19,6 +19,15 @@ vagy alulterhelt ahálózat. A PowerTrade segítségével egy olyan adabázist h
 fogyasztók listázhatják kapacitásaikat, vagy energiaigényüket idő és teljesítmény fügvényében. A PowerTrade 
 segítségével lekérhetik a másnapi teljesítmény trendet, és megvizsgálhatják, hogy adott órában mekkora teljesítmény 
 áll rendelkezésre és, vagy mekkora kínálatra számíthatnak.
+
+English
+
+In the electricity trading sector, not only the quantity of electricity but also the timing of its transmission is extremely important. Since storing electrical energy is highly costly, it is crucial for the generation and consumption of electricity to occur simultaneously, and the amount of electricity produced and consumed should be identical. This requires essential coordination between producers and consumers.
+
+The primary electricity trading involves the next-day electricity trade, where energy producers and consumers prearrange the amount of electricity they will need the following day and how much they will have to pay for it. The determination of the quantity and price of electricity depends on market supply and demand conditions, and prices are set the day before. Agreements between energy consumers and producers are made on electronic marketplaces, such as EPEX SPOT. This helps maintain balance between electricity consumption and production, ensuring that the network is neither overloaded nor underloaded.
+
+With PowerTrade, a database can be created where producers and consumers can list their capacities or energy needs based on time and performance. Through PowerTrade, they can query the performance trend for the next day and examine the available performance in a given hour or what supply they can expect.
+
 
 ## Az alkalmazás struktúrája
 ![DB_Schema](https://user-images.githubusercontent.com/105811419/232657598-7ca687ed-97ff-44c9-9bb1-dcd4b7186f4e.png)
