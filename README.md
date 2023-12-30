@@ -79,7 +79,7 @@ http://localhost:8080/swagger-ui/index.html
 
 ## Installation Guide: 
 
-1.For using MySQL database:
+1. For using MySQL database:
 
 Use the appropriate settings in the .env and .env.docker files.
 ```
