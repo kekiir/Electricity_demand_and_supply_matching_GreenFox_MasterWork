@@ -52,29 +52,30 @@ class CapacityControllerTest {
     testSupplier = Supplier.builder().id(1001).username("defaultPlayer").capacityList(new ArrayList<>()).build();
     tomorrow = LocalDateTime.now().plusDays(1).withHour(12).withMinute(0);
     tomorrow12Am = LocalDateTime.now().plusDays(1).withHour(12).withMinute(0)
-        .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:00"))
-        .toString();
+      .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:00"))
+      .toString();
     tomorrow14Am = LocalDateTime.now().plusDays(1).withHour(14).withMinute(0)
-        .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:00"))
-        .toString();
+      .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:00"))
+      .toString();
     authCreateCapacity = new UsernamePasswordAuthenticationToken(testSupplier, null, null);
   }
 
   @Test
   void createCapacity() throws Exception {
     CapacityRequestDTO capacityRequestDTO =
-        new CapacityRequestDTO("WIND", 50d, 45d, tomorrow12Am, tomorrow14Am);
+      new CapacityRequestDTO("WIND", 50d, 45d, tomorrow12Am, tomorrow14Am);
 
     mockMvc.perform(post("/supplier/capacity")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(capacityRequestDTO))
-            .principal(authCreateCapacity))
-        .andExpect(jsonPath("$.energySource").value("WIND"))
-        .andExpect(jsonPath("$.amountMW").value(50))
-        .andExpect(jsonPath("$.available").value(50))
-        .andExpect(jsonPath("$.price").value(45))
-        .andExpect(jsonPath("$.fromTime").isString())
-        .andExpect(jsonPath("$.toTime").isString());
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(objectMapper.writeValueAsString(capacityRequestDTO))
+        .principal(authCreateCapacity))
+      .andExpect(jsonPath("$.energySource").exists())
+      .andExpect(jsonPath("$.energySource").value("WIND"))
+      .andExpect(jsonPath("$.amountMW").value(50))
+      .andExpect(jsonPath("$.available").value(50))
+      .andExpect(jsonPath("$.price").value(45))
+      .andExpect(jsonPath("$.fromTime").isString())
+      .andExpect(jsonPath("$.toTime").isString());
 
   }
 

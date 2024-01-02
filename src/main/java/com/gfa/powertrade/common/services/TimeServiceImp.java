@@ -1,6 +1,7 @@
 package com.gfa.powertrade.common.services;
 
 import com.gfa.powertrade.common.exceptions.ForbiddenActionException;
+import com.gfa.powertrade.settings.ApplicationSettings;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.time.*;
@@ -21,19 +22,24 @@ public class TimeServiceImp implements TimeService {
   }
 
   public void validateGivenDates(String fromString, String toString) throws IllegalArgumentException,
-      ForbiddenActionException {
+    ForbiddenActionException {
     LocalDateTime from;
     LocalDateTime to;
     LocalDateTime now = LocalDateTime.now();
     LocalDateTime twoHourBeforeTodayMidnight =
-        LocalDateTime.now().withHour(22).withMinute(0).withSecond(0).withNano(0);
+      LocalDateTime.now().withHour(ApplicationSettings.MARKET_DAILY_CLOSING_HOUR).withMinute(
+        ApplicationSettings.MARKET_DAILY_CLOSING_MINUTES).withSecond(
+        ApplicationSettings.MARKET_DAILY_CLOSING_SECONDS).withNano(0);
     LocalDateTime tomorrowMidnight =
-        LocalDateTime.now().plusDays(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
+      LocalDateTime.now().plusDays(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
 
     if (now.isAfter(twoHourBeforeTodayMidnight) && now.isBefore(tomorrowMidnight))
-      throw new IllegalArgumentException("Dates posting for tomorrow excepted until 22:00");
+      throw new IllegalArgumentException(
+        "Dates posting for tomorrow excepted until "
+          + ApplicationSettings.MARKET_DAILY_CLOSING_HOUR
+          + ":" + ApplicationSettings.MARKET_DAILY_CLOSING_MINUTES + ".");
     LocalDateTime afterTomorrowMidnight =
-        LocalDateTime.now().plusDays(2).withHour(0).withMinute(0).withSecond(0).withNano(0);
+      LocalDateTime.now().plusDays(2).withHour(0).withMinute(0).withSecond(0).withNano(0);
     from = validateDateFormat(fromString);
     to = validateDateFormat(toString);
     validateDateRange(from, to, tomorrowMidnight, afterTomorrowMidnight);
@@ -49,7 +55,7 @@ public class TimeServiceImp implements TimeService {
   }
 
   public void validateDateRange(LocalDateTime from, LocalDateTime to, LocalDateTime tomorrowMidnight,
-      LocalDateTime afterTomorrowMidnight) {
+    LocalDateTime afterTomorrowMidnight) {
     String tomorrowDate = LocalDateTime.now().plusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     if (!from.isAfter(tomorrowMidnight.minusNanos(1)) || !to.isBefore(afterTomorrowMidnight.plusNanos(1))) {
       throw new IllegalArgumentException("Dates accepted only for tomorrow(" + tomorrowDate + ").");
