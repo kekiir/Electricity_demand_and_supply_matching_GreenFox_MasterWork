@@ -13,6 +13,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -52,13 +53,27 @@ public class RegistrationServiceImp implements RegistrationService {
   @Override
   public void validateRegistration(RegistrationRequestDTO reg) throws AlreadyTakenUsernameException,
     InvalidPasswordException, InvalidUserTypeException {
+    validateUserType(reg);
+    checkUsernameIsTaken(reg);
+    validatePassword(reg);
 
+  }
+
+  public void validateUserType(RegistrationRequestDTO reg) throws InvalidUserTypeException {
     if (!reg.getUserType().toUpperCase().equals(
       UserType.SUPPLIER.toString()) && !reg.getUserType().toUpperCase().equals(UserType.CONSUMER.toString()))
       throw new InvalidUserTypeException();
-    if (!supplierRepository.findByUsername(reg.getUsername()).isPresent() && !consumerRepository.findByUsername(
+
+  }
+
+  public void checkUsernameIsTaken (RegistrationRequestDTO reg) throws AlreadyTakenUsernameException {
+    if (supplierRepository.findByUsername(reg.getUsername()).isPresent() || consumerRepository.findByUsername(
       reg.getUsername()).isPresent())
       throw new AlreadyTakenUsernameException("Username is already taken.");
+
+  }
+
+  public void validatePassword (RegistrationRequestDTO reg) throws InvalidPasswordException {
     if (reg.getPassword() == null || reg.getPassword().trim().length() < 8)
       throw new InvalidPasswordException("Password must be at least 8 characters.");
 
