@@ -54,7 +54,7 @@ public class RegistrationServiceImp implements RegistrationService {
   public void validateRegistration(RegistrationRequestDTO reg) throws AlreadyTakenUsernameException,
     InvalidPasswordException, InvalidUserTypeException {
     validateUserType(reg);
-    checkUsernameIsTaken(reg);
+    checkUsernameIsAlredyTaken(reg);
     validatePassword(reg);
 
   }
@@ -66,7 +66,7 @@ public class RegistrationServiceImp implements RegistrationService {
 
   }
 
-  public void checkUsernameIsTaken (RegistrationRequestDTO reg) throws AlreadyTakenUsernameException {
+  public void checkUsernameIsAlredyTaken (RegistrationRequestDTO reg) throws AlreadyTakenUsernameException {
     if (supplierRepository.findByUsername(reg.getUsername()).isPresent() || consumerRepository.findByUsername(
       reg.getUsername()).isPresent())
       throw new AlreadyTakenUsernameException("Username is already taken.");
