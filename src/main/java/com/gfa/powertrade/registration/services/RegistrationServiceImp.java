@@ -9,7 +9,7 @@ import com.gfa.powertrade.registration.models.*;
 import com.gfa.powertrade.supplier.models.Supplier;
 import com.gfa.powertrade.supplier.repository.SupplierRepository;
 import com.gfa.powertrade.user.models.User;
-import lombok.AllArgsConstructor;
+import lombok.*;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
@@ -17,6 +17,8 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
+@Getter
+@Setter
 public class RegistrationServiceImp implements RegistrationService {
 
   private SupplierRepository supplierRepository;

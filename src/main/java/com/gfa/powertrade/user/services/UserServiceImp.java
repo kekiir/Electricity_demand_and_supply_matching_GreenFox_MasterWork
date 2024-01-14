@@ -14,8 +14,7 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
-@Getter
-@Setter
+
 public class UserServiceImp implements UserService {
 
   private ConsumerRepository consumerRepository;

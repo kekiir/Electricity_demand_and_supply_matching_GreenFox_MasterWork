@@ -19,7 +19,7 @@ import static org.mockito.Mockito.when;
 
 class UserServiceImpUnitTest {
 
-  private UserServiceImp userService;
+  private UserService userService;
   private ConsumerRepository consumerRepository;
   private SupplierRepository supplierRepository;
 
@@ -27,14 +27,13 @@ class UserServiceImpUnitTest {
   void setUp() {
     consumerRepository = mock(ConsumerRepository.class);
     supplierRepository = mock(SupplierRepository.class);
-    userService = new UserServiceImp(null, null);
+    userService = new UserServiceImp(consumerRepository, supplierRepository);
   }
 
   @Test
   void testFindByUsername_ValidSupplier() {
     // Arrange
     when(supplierRepository.findByUsername("validSupplier")).thenReturn(Optional.of(new Supplier()));
-    userService.setSupplierRepository(supplierRepository);
 
     // Act
     Optional<User> result = userService.findByUsername("validSupplier", UserType.SUPPLIER.toString());
@@ -48,7 +47,6 @@ class UserServiceImpUnitTest {
   void testFindByUsername_ValidConsumer() {
     // Arrange
     when(consumerRepository.findByUsername("validConsumer")).thenReturn(Optional.of(new Consumer()));
-    userService.setConsumerRepository(consumerRepository);
 
     // Act
     Optional<User> result = userService.findByUsername("validConsumer", UserType.CONSUMER.toString());
@@ -82,8 +80,6 @@ class UserServiceImpUnitTest {
   void testFindByUsername_NoUserFound() {
     // Arrange
     when(consumerRepository.findByUsername("nonexistentUser")).thenReturn(Optional.empty());
-
-    userService.setConsumerRepository(consumerRepository);
 
     // Act and Assert
     assertThrows(LoginFailureException.class,

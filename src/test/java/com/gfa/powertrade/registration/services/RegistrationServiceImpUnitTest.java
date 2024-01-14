@@ -12,7 +12,7 @@ import static org.mockito.Mockito.mock;
 
 class RegistrationServiceImpUnitTest {
 
-  private RegistrationService userService;
+  private RegistrationServiceImp registrationService;
   private ConsumerRepository consumerRepository;
   private SupplierRepository supplierRepository;
 
@@ -20,7 +20,7 @@ class RegistrationServiceImpUnitTest {
   void setUp() {
     consumerRepository = mock(ConsumerRepository.class);
     supplierRepository = mock(SupplierRepository.class);
-    userService = new RegistrationServiceImp(supplierRepository, consumerRepository);
+    registrationService = new RegistrationServiceImp(null, null);
   }
 
   @Test
