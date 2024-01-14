@@ -67,14 +67,14 @@ public class RegistrationServiceImp implements RegistrationService {
 
   }
 
-  public void checkUsernameIsAlredyTaken (RegistrationRequestDTO reg) throws AlreadyTakenUsernameException {
+  public void checkUsernameIsAlredyTaken(RegistrationRequestDTO reg) throws AlreadyTakenUsernameException {
     if (supplierRepository.findByUsername(reg.getUsername()).isPresent() || consumerRepository.findByUsername(
       reg.getUsername()).isPresent())
       throw new AlreadyTakenUsernameException("Username is already taken.");
 
   }
 
-  public void validatePassword (RegistrationRequestDTO reg) throws InvalidPasswordException {
+  public void validatePassword(RegistrationRequestDTO reg) throws InvalidPasswordException {
     if (reg.getPassword() == null || reg.getPassword().trim().length() < 8)
       throw new InvalidPasswordException("Password must be at least 8 characters.");
 

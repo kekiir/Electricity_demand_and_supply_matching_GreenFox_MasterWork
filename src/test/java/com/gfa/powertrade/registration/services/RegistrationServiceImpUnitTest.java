@@ -1,5 +1,6 @@
 package com.gfa.powertrade.registration.services;
 
+import com.gfa.powertrade.common.exceptions.InvalidUserTypeException;
 import com.gfa.powertrade.consumers.models.Consumer;
 import com.gfa.powertrade.consumers.repositories.ConsumerRepository;
 import com.gfa.powertrade.registration.exceptions.AlreadyTakenUsernameException;
@@ -49,7 +50,41 @@ class RegistrationServiceImpUnitTest {
   }
 
   @Test
-  void validateUserType() {
+  void validateUserType_ValidUserType() {
+    // Arrange
+    RegistrationRequestDTO regWithCorrectUserType1 =
+      new RegistrationRequestDTO(null, null, "supplier");
+    RegistrationRequestDTO regWithCorrectUserType2 =
+      new RegistrationRequestDTO(null, null, "SuPplier");
+    RegistrationRequestDTO regWithCorrectUserType3 =
+      new RegistrationRequestDTO(null, null, "consumer");
+    RegistrationRequestDTO regWithCorrectUserType4 =
+      new RegistrationRequestDTO(null, null, "ConSumer");
+
+    //Assert
+    assertDoesNotThrow(() -> registrationService.validateUserType(regWithCorrectUserType1));
+    assertDoesNotThrow(() -> registrationService.validateUserType(regWithCorrectUserType2));
+    assertDoesNotThrow(() -> registrationService.validateUserType(regWithCorrectUserType3));
+    assertDoesNotThrow(() -> registrationService.validateUserType(regWithCorrectUserType4));
+  }
+
+  @Test
+  void validateUserType_InvalidUserType() {
+    // Arrange
+    RegistrationRequestDTO regWithIncorrectUserType1 =
+      new RegistrationRequestDTO(null, null, "suplier");
+    RegistrationRequestDTO regWithIncorrectUserType2 =
+      new RegistrationRequestDTO(null, null, "SzuPplier");
+    RegistrationRequestDTO regWithIncorrectUserType3 =
+      new RegistrationRequestDTO(null, null, "");
+    RegistrationRequestDTO regWithIncorrectUserType4 =
+      new RegistrationRequestDTO(null, null, "konszumer");
+
+    //Assert
+    assertThrows(InvalidUserTypeException.class, () -> registrationService.validateUserType(regWithIncorrectUserType1));
+    assertThrows(InvalidUserTypeException.class, () -> registrationService.validateUserType(regWithIncorrectUserType2));
+    assertThrows(InvalidUserTypeException.class, () -> registrationService.validateUserType(regWithIncorrectUserType3));
+    assertThrows(InvalidUserTypeException.class, () -> registrationService.validateUserType(regWithIncorrectUserType4));
   }
 
   @Test
