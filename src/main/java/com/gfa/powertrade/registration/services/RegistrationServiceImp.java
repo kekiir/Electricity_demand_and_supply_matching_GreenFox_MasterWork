@@ -17,8 +17,7 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
-@Getter
-@Setter
+
 public class RegistrationServiceImp implements RegistrationService {
 
   private SupplierRepository supplierRepository;

@@ -17,8 +17,8 @@ import java.util.Optional;
 
 public class UserServiceImp implements UserService {
 
-  private ConsumerRepository consumerRepository;
   private SupplierRepository supplierRepository;
+  private ConsumerRepository consumerRepository;
 
   @Override
   public Optional<User> findByUsername(String username, String userType) {

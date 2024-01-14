@@ -27,7 +27,7 @@ class UserServiceImpUnitTest {
   void setUp() {
     consumerRepository = mock(ConsumerRepository.class);
     supplierRepository = mock(SupplierRepository.class);
-    userService = new UserServiceImp(consumerRepository, supplierRepository);
+    userService = new UserServiceImp(supplierRepository, consumerRepository);
   }
 
   @Test
