@@ -8,6 +8,7 @@ import com.gfa.powertrade.registration.models.UserType;
 import com.gfa.powertrade.supplier.models.Supplier;
 import com.gfa.powertrade.supplier.repository.SupplierRepository;
 import com.gfa.powertrade.user.models.User;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
@@ -16,15 +17,24 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class UserServiceImpTest {
+class UserServiceImpUnitTest {
+
+  private UserServiceImp userService;
+  private ConsumerRepository consumerRepository;
+  private SupplierRepository supplierRepository;
+
+  @BeforeEach
+  void setUp() {
+    consumerRepository = mock(ConsumerRepository.class);
+    supplierRepository = mock(SupplierRepository.class);
+    userService = new UserServiceImp(null, null);
+  }
 
   @Test
   void testFindByUsername_ValidSupplier() {
     // Arrange
-    SupplierRepository supplierRepository = mock(SupplierRepository.class);
     when(supplierRepository.findByUsername("validSupplier")).thenReturn(Optional.of(new Supplier()));
-
-    UserService userService = new UserServiceImp(null, supplierRepository);
+    userService.setSupplierRepository(supplierRepository);
 
     // Act
     Optional<User> result = userService.findByUsername("validSupplier", UserType.SUPPLIER.toString());
@@ -37,10 +47,8 @@ class UserServiceImpTest {
   @Test
   void testFindByUsername_ValidConsumer() {
     // Arrange
-    ConsumerRepository consumerRepository = mock(ConsumerRepository.class);
     when(consumerRepository.findByUsername("validConsumer")).thenReturn(Optional.of(new Consumer()));
-
-    UserService userService = new UserServiceImp(consumerRepository, null);
+    userService.setConsumerRepository(consumerRepository);
 
     // Act
     Optional<User> result = userService.findByUsername("validConsumer", UserType.CONSUMER.toString());
@@ -55,7 +63,6 @@ class UserServiceImpTest {
   @Test
   void testValidateSuppliertype_ValidSupplier() {
     // Arrange
-    UserService userService = new UserServiceImp(null, null);
     Supplier supplier = new Supplier();
 
     // Act and Assert
@@ -65,7 +72,6 @@ class UserServiceImpTest {
   @Test
   void testValidateConsumertype_ValidConsumer() {
     // Arrange
-    UserService userService = new UserServiceImp(null, null);
     Consumer consumer = new Consumer();
 
     // Act and Assert
@@ -75,10 +81,9 @@ class UserServiceImpTest {
   @Test
   void testFindByUsername_NoUserFound() {
     // Arrange
-    ConsumerRepository consumerRepository = mock(ConsumerRepository.class);
     when(consumerRepository.findByUsername("nonexistentUser")).thenReturn(Optional.empty());
 
-    UserService userService = new UserServiceImp(consumerRepository, null);
+    userService.setConsumerRepository(consumerRepository);
 
     // Act and Assert
     assertThrows(LoginFailureException.class,
@@ -88,7 +93,6 @@ class UserServiceImpTest {
   @Test
   void testValidateSuppliertype_InvalidSupplierType() {
     // Arrange
-    UserService userService = new UserServiceImp(null, null);
     Consumer consumer = new Consumer();
 
     // Act and Assert
@@ -98,7 +102,6 @@ class UserServiceImpTest {
   @Test
   void testValidateConsumertype_InvalidConsumerType() {
     // Arrange
-    UserService userService = new UserServiceImp(null, null);
     Supplier supplier = new Supplier();
 
     // Act and Assert
