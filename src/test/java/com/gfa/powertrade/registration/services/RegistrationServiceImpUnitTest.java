@@ -57,20 +57,39 @@ class RegistrationServiceImpUnitTest {
   }
 
   @Test
-  void validatePassword() {
+  void testValidatePassword_NullPassword() {
     // Arrange
     RegistrationRequestDTO regWithNullPassword = new RegistrationRequestDTO();
-    RegistrationRequestDTO regWithLessThan8CharPassword = new RegistrationRequestDTO(null, "pass", null);
-    RegistrationRequestDTO regWithMoreThan7CharPassword = new RegistrationRequestDTO(null, "password", null);
 
     // Act
 
     // Assert
     assertThrows(InvalidPasswordException.class, () -> registrationService.validatePassword(regWithNullPassword));
+
+  }
+
+  @Test
+  void testValidatePassword_NullPassword_LessThen8CharPassword() {
+    // Arrange
+    RegistrationRequestDTO regWithLessThan8CharPassword = new RegistrationRequestDTO(null, "pass", null);
+
+    // Act
+
+    // Assert
     assertThrows(InvalidPasswordException.class,
       () -> registrationService.validatePassword(regWithLessThan8CharPassword));
-    assertDoesNotThrow(() -> registrationService.validatePassword(regWithMoreThan7CharPassword));
 
+  }
+
+  @Test
+  void testValidatePassword_NullPassword_MoreThan7CharPassword() {
+    // Arrange
+    RegistrationRequestDTO regWithMoreThan7CharPassword = new RegistrationRequestDTO(null, "password", null);
+
+    // Act
+
+    // Assert
+    assertDoesNotThrow(() -> registrationService.validatePassword(regWithMoreThan7CharPassword));
 
   }
 
