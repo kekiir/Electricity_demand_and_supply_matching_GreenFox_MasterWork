@@ -8,8 +8,6 @@ import com.gfa.powertrade.registration.exceptions.InvalidPasswordException;
 import com.gfa.powertrade.registration.models.RegistrationRequestDTO;
 import com.gfa.powertrade.supplier.models.Supplier;
 import com.gfa.powertrade.supplier.repository.SupplierRepository;
-import com.gfa.powertrade.user.services.UserService;
-import com.gfa.powertrade.user.services.UserServiceImp;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -17,12 +15,12 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class RegistrationServiceImpUnitTest {
 
-  private RegistrationServiceImp registrationService;
+  private RegistrationServiceImp registrationServiceMock;
+  private RegistrationServiceImp registrationServiceSpy;
   private ConsumerRepository consumerRepository;
   private SupplierRepository supplierRepository;
 
@@ -30,7 +28,9 @@ class RegistrationServiceImpUnitTest {
   void setUp() {
     consumerRepository = mock(ConsumerRepository.class);
     supplierRepository = mock(SupplierRepository.class);
-    registrationService = new RegistrationServiceImp(supplierRepository, consumerRepository);
+    registrationServiceMock = new RegistrationServiceImp(supplierRepository, consumerRepository);
+    registrationServiceSpy = new RegistrationServiceImp(supplierRepository, consumerRepository);
+    registrationServiceSpy = spy(registrationServiceSpy);
   }
 
   @Test
@@ -46,8 +46,48 @@ class RegistrationServiceImpUnitTest {
   }
 
   @Test
-  void validateRegistration() {
+  void validateRegistration_When_RegistrationRequestDTO_is_valid() {
+    //Arrange
+    RegistrationRequestDTO validRegSupplier =
+      new RegistrationRequestDTO("AccesableName1", "validpass", "supplier");
+    RegistrationRequestDTO validRegConsumer =
+      new RegistrationRequestDTO("AccesableName2", "validpass", "consumer");
+
+    when(supplierRepository.findByUsername("AccesableName1")).thenReturn(Optional.empty());
+    when(consumerRepository.findByUsername("AccesableName2")).thenReturn(Optional.empty());
+
+    //Act and Assert
+    assertDoesNotThrow(() -> registrationServiceMock.validateRegistration(validRegSupplier));
+    assertDoesNotThrow(() -> registrationServiceMock.validateRegistration(validRegConsumer));
   }
+
+  @Test
+  void validateRegistration_When_RegistrationRequestDTO_is_Invalid() {
+    //Arrange
+    RegistrationRequestDTO regWithInvalidUserType =
+      new RegistrationRequestDTO("validName", "shortpa", "invalidUserType");
+    RegistrationRequestDTO regWithInvalidUserName =
+      new RegistrationRequestDTO("AlreadyTakenName", "validPassword", "consumer");
+    RegistrationRequestDTO regWithInvalidPassword =
+      new RegistrationRequestDTO("validName", "invPas", "consumer");
+
+    when(supplierRepository.findByUsername("validName")).thenReturn(Optional.empty());
+    when(consumerRepository.findByUsername("validName")).thenReturn(Optional.empty());
+    when(supplierRepository.findByUsername("AlreadyTakenName")).thenReturn(Optional.of(new Supplier()));
+    when(consumerRepository.findByUsername("AlreadyTakenName")).thenReturn(Optional.of(new Consumer()));
+
+
+    //Act and Assert
+    assertThrows(InvalidUserTypeException.class,
+      () -> registrationServiceMock.validateRegistration(regWithInvalidUserType));
+    assertThrows(AlreadyTakenUsernameException.class,
+      () -> registrationServiceMock.validateRegistration(regWithInvalidUserName));
+    assertThrows(InvalidPasswordException.class,
+      () -> registrationServiceMock.validateRegistration(regWithInvalidPassword));
+
+  }
+
+
 
   @Test
   void validateUserType_ValidUserType() {
@@ -62,10 +102,10 @@ class RegistrationServiceImpUnitTest {
       new RegistrationRequestDTO(null, null, "ConSumer");
 
     //Assert
-    assertDoesNotThrow(() -> registrationService.validateUserType(regWithCorrectUserType1));
-    assertDoesNotThrow(() -> registrationService.validateUserType(regWithCorrectUserType2));
-    assertDoesNotThrow(() -> registrationService.validateUserType(regWithCorrectUserType3));
-    assertDoesNotThrow(() -> registrationService.validateUserType(regWithCorrectUserType4));
+    assertDoesNotThrow(() -> registrationServiceMock.validateUserType(regWithCorrectUserType1));
+    assertDoesNotThrow(() -> registrationServiceMock.validateUserType(regWithCorrectUserType2));
+    assertDoesNotThrow(() -> registrationServiceMock.validateUserType(regWithCorrectUserType3));
+    assertDoesNotThrow(() -> registrationServiceMock.validateUserType(regWithCorrectUserType4));
   }
 
   @Test
@@ -81,10 +121,14 @@ class RegistrationServiceImpUnitTest {
       new RegistrationRequestDTO(null, null, "konszumer");
 
     //Assert
-    assertThrows(InvalidUserTypeException.class, () -> registrationService.validateUserType(regWithIncorrectUserType1));
-    assertThrows(InvalidUserTypeException.class, () -> registrationService.validateUserType(regWithIncorrectUserType2));
-    assertThrows(InvalidUserTypeException.class, () -> registrationService.validateUserType(regWithIncorrectUserType3));
-    assertThrows(InvalidUserTypeException.class, () -> registrationService.validateUserType(regWithIncorrectUserType4));
+    assertThrows(InvalidUserTypeException.class,
+      () -> registrationServiceMock.validateUserType(regWithIncorrectUserType1));
+    assertThrows(InvalidUserTypeException.class,
+      () -> registrationServiceMock.validateUserType(regWithIncorrectUserType2));
+    assertThrows(InvalidUserTypeException.class,
+      () -> registrationServiceMock.validateUserType(regWithIncorrectUserType3));
+    assertThrows(InvalidUserTypeException.class,
+      () -> registrationServiceMock.validateUserType(regWithIncorrectUserType4));
   }
 
   @Test
@@ -99,7 +143,7 @@ class RegistrationServiceImpUnitTest {
 
     // Assert
     assertThrows(AlreadyTakenUsernameException.class,
-      () -> registrationService.checkUsernameIsAlredyTaken(regSupplierWithOccupiedName));
+      () -> registrationServiceMock.checkUsernameIsAlredyTaken(regSupplierWithOccupiedName));
   }
 
   @Test
@@ -113,7 +157,7 @@ class RegistrationServiceImpUnitTest {
 
     // Assert
     assertThrows(AlreadyTakenUsernameException.class,
-      () -> registrationService.checkUsernameIsAlredyTaken(regConsumerWithOccupiedName));
+      () -> registrationServiceMock.checkUsernameIsAlredyTaken(regConsumerWithOccupiedName));
   }
 
   @Test
@@ -131,8 +175,8 @@ class RegistrationServiceImpUnitTest {
     // Act
 
     // Assert
-    assertDoesNotThrow(() -> registrationService.checkUsernameIsAlredyTaken(regSupplierWithFreedName));
-    assertDoesNotThrow(() -> registrationService.checkUsernameIsAlredyTaken(regConsumerWithFreedName));
+    assertDoesNotThrow(() -> registrationServiceMock.checkUsernameIsAlredyTaken(regSupplierWithFreedName));
+    assertDoesNotThrow(() -> registrationServiceMock.checkUsernameIsAlredyTaken(regConsumerWithFreedName));
   }
 
   @Test
@@ -143,7 +187,7 @@ class RegistrationServiceImpUnitTest {
     // Act
 
     // Assert
-    assertThrows(InvalidPasswordException.class, () -> registrationService.validatePassword(regWithNullPassword));
+    assertThrows(InvalidPasswordException.class, () -> registrationServiceMock.validatePassword(regWithNullPassword));
 
   }
 
@@ -156,7 +200,7 @@ class RegistrationServiceImpUnitTest {
 
     // Assert
     assertThrows(InvalidPasswordException.class,
-      () -> registrationService.validatePassword(regWithLessThan8CharPassword));
+      () -> registrationServiceMock.validatePassword(regWithLessThan8CharPassword));
 
   }
 
@@ -166,10 +210,10 @@ class RegistrationServiceImpUnitTest {
     RegistrationRequestDTO regWithMoreThan7CharPassword = new RegistrationRequestDTO(null, "password", null);
 
     // Act
-    registrationService.validatePassword(regWithMoreThan7CharPassword);
+    registrationServiceMock.validatePassword(regWithMoreThan7CharPassword);
 
     // Assert
-    assertDoesNotThrow(() -> registrationService.validatePassword(regWithMoreThan7CharPassword));
+    assertDoesNotThrow(() -> registrationServiceMock.validatePassword(regWithMoreThan7CharPassword));
 
   }
 
