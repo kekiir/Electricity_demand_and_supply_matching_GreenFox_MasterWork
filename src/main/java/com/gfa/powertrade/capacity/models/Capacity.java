@@ -47,9 +47,6 @@ public class Capacity {
   @OnDelete(action = OnDeleteAction.CASCADE)
   private List<PowerQuantity> powerQuantityList;
 
-
-
-
   public void setCapacityAmount(Double newAmount) {
     Double contractedAmount = capacityAmount - available;
     if (this.capacityAmount - this.available > newAmount)
@@ -66,19 +63,22 @@ public class Capacity {
     if (!(o instanceof Capacity))
       return false;
     Capacity capacity = (Capacity) o;
+    return isEqualCapacity(capacity);
+  }
+
+  private boolean isEqualCapacity(Capacity capacity) {
     return Objects.equals(id, capacity.id) && energySource == capacity.energySource && Objects.equals(
-      capacityAmount, capacity.capacityAmount) && Objects.equals(available,
-      capacity.available) && Objects.equals(capacityFromTime,
-      capacity.capacityFromTime) && Objects.equals(capacityToTime,
-      capacity.capacityToTime) && Objects.equals(price, capacity.price) && Objects.equals(supplier,
-      capacity.supplier) && Objects.equals(contractList, capacity.contractList) && Objects.equals(
-      powerQuantityList, capacity.powerQuantityList);
+        capacityAmount, capacity.capacityAmount) && Objects.equals(available, capacity.available) && Objects.equals(
+        capacityFromTime, capacity.capacityFromTime) && Objects.equals(capacityToTime, capacity.capacityToTime)
+        && Objects.equals(price, capacity.price) && Objects.equals(supplier,
+        capacity.supplier) && Objects.equals(contractList, capacity.contractList) && Objects.equals(powerQuantityList,
+        capacity.powerQuantityList);
   }
 
   @Override
   public int hashCode() {
     return Objects.hash(id, energySource, capacityAmount, available, capacityFromTime, capacityToTime, price, supplier,
-      contractList, powerQuantityList);
+        contractList, powerQuantityList);
   }
 
 }

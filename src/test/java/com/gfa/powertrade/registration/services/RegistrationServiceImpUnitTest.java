@@ -46,85 +46,105 @@ class RegistrationServiceImpUnitTest {
   }
 
   @Test
-  void validateRegistration_When_RegistrationRequestDTO_is_valid() {
+  void validateRegistration_When_Supplier_RegistrationRequestDTO_is_valid() {
     //Arrange
-    RegistrationRequestDTO validRegSupplier =
-      new RegistrationRequestDTO("AccesableName1", "validpass", "supplier");
-    RegistrationRequestDTO validRegConsumer =
-      new RegistrationRequestDTO("AccesableName2", "validpass", "consumer");
-
-    when(supplierRepository.findByUsername("AccesableName1")).thenReturn(Optional.empty());
-    when(consumerRepository.findByUsername("AccesableName2")).thenReturn(Optional.empty());
+    RegistrationRequestDTO validRegSupplier = new RegistrationRequestDTO("AccessibleName1", "validpass", "supplier");
+    when(supplierRepository.findByUsername("AccessibleName1")).thenReturn(Optional.empty());
 
     //Act and Assert
     assertDoesNotThrow(() -> registrationServiceMock.validateRegistration(validRegSupplier));
+  }
+
+  @Test
+  void validateRegistration_When_Consumer_RegistrationRequestDTO_is_valid() {
+    //Arrange
+    RegistrationRequestDTO validRegConsumer = new RegistrationRequestDTO("AccessibleName2", "validpass", "consumer");
+    when(consumerRepository.findByUsername("AccessibleName")).thenReturn(Optional.empty());
+
+    //Act and Assert
     assertDoesNotThrow(() -> registrationServiceMock.validateRegistration(validRegConsumer));
   }
 
   @Test
-  void validateRegistration_When_RegistrationRequestDTO_is_Invalid() {
+  void validateRegistration_When_RegistrationRequestDTO_is_with_invalidPasssword() {
     //Arrange
-    RegistrationRequestDTO regWithInvalidUserType =
-      new RegistrationRequestDTO("validName", "shortpa", "invalidUserType");
-    RegistrationRequestDTO regWithInvalidUserName =
-      new RegistrationRequestDTO("AlreadyTakenName", "validPassword", "consumer");
-    RegistrationRequestDTO regWithInvalidPassword =
-      new RegistrationRequestDTO("validName", "invPas", "consumer");
-
+    RegistrationRequestDTO regWithInvalidPassword = new RegistrationRequestDTO("validName", "invPas", "consumer");
     when(supplierRepository.findByUsername("validName")).thenReturn(Optional.empty());
     when(consumerRepository.findByUsername("validName")).thenReturn(Optional.empty());
-    when(supplierRepository.findByUsername("AlreadyTakenName")).thenReturn(Optional.of(new Supplier()));
-    when(consumerRepository.findByUsername("AlreadyTakenName")).thenReturn(Optional.of(new Consumer()));
 
+    //Act and Assert
+    assertThrows(InvalidPasswordException.class,
+      () -> registrationServiceMock.validateRegistration(regWithInvalidPassword));
+  }
+
+  @Test
+  void validateRegistration_When_RegistrationRequestDTO_with_InvalidUserType() {
+    //Arrange
+    RegistrationRequestDTO regWithInvalidUserType = new RegistrationRequestDTO("validName", "shortpa",
+      "invalidUserType");
+    when(supplierRepository.findByUsername("validName")).thenReturn(Optional.empty());
+    when(consumerRepository.findByUsername("validName")).thenReturn(Optional.empty());
 
     //Act and Assert
     assertThrows(InvalidUserTypeException.class,
       () -> registrationServiceMock.validateRegistration(regWithInvalidUserType));
-    assertThrows(AlreadyTakenUsernameException.class,
-      () -> registrationServiceMock.validateRegistration(regWithInvalidUserName));
-    assertThrows(InvalidPasswordException.class,
-      () -> registrationServiceMock.validateRegistration(regWithInvalidPassword));
-
   }
 
+  @Test
+  void validateRegistration_When_RegistrationRequestDTO_is_with_AlreadyTakenName() {
+    //Arrange
+    RegistrationRequestDTO regWithInvalidUserName = new RegistrationRequestDTO("AlreadyTakenName", "validPassword",
+      "consumer");
 
+    when(supplierRepository.findByUsername("AlreadyTakenName")).thenReturn(Optional.of(new Supplier()));
+    when(consumerRepository.findByUsername("AlreadyTakenName")).thenReturn(Optional.of(new Consumer()));
+    //Act and Assert
+
+    assertThrows(AlreadyTakenUsernameException.class,
+      () -> registrationServiceMock.validateRegistration(regWithInvalidUserName));
+  }
 
   @Test
-  void validateUserType_ValidUserType() {
+  void validateUserType_ValidSupplierUserType() {
     // Arrange
-    RegistrationRequestDTO regWithCorrectUserType1 =
-      new RegistrationRequestDTO(null, null, "supplier");
-    RegistrationRequestDTO regWithCorrectUserType2 =
-      new RegistrationRequestDTO(null, null, "SuPplier");
-    RegistrationRequestDTO regWithCorrectUserType3 =
-      new RegistrationRequestDTO(null, null, "consumer");
-    RegistrationRequestDTO regWithCorrectUserType4 =
-      new RegistrationRequestDTO(null, null, "ConSumer");
+    RegistrationRequestDTO regWithCorrectUserType1 = new RegistrationRequestDTO(null, null, "supplier");
+    RegistrationRequestDTO regWithCorrectUserType2 = new RegistrationRequestDTO(null, null, "SuPplier");
 
     //Assert
     assertDoesNotThrow(() -> registrationServiceMock.validateUserType(regWithCorrectUserType1));
     assertDoesNotThrow(() -> registrationServiceMock.validateUserType(regWithCorrectUserType2));
+  }
+
+  @Test
+  void validateUserType_ValidConsumerUserType() {
+    // Arrange
+    RegistrationRequestDTO regWithCorrectUserType3 = new RegistrationRequestDTO(null, null, "consumer");
+    RegistrationRequestDTO regWithCorrectUserType4 = new RegistrationRequestDTO(null, null, "ConSumer");
+    //Assert
     assertDoesNotThrow(() -> registrationServiceMock.validateUserType(regWithCorrectUserType3));
     assertDoesNotThrow(() -> registrationServiceMock.validateUserType(regWithCorrectUserType4));
   }
 
   @Test
-  void validateUserType_InvalidUserType() {
+  void validateUserType_InvalidSupplierUserType() {
     // Arrange
-    RegistrationRequestDTO regWithIncorrectUserType1 =
-      new RegistrationRequestDTO(null, null, "suplier");
-    RegistrationRequestDTO regWithIncorrectUserType2 =
-      new RegistrationRequestDTO(null, null, "SzuPplier");
-    RegistrationRequestDTO regWithIncorrectUserType3 =
-      new RegistrationRequestDTO(null, null, "");
-    RegistrationRequestDTO regWithIncorrectUserType4 =
-      new RegistrationRequestDTO(null, null, "konszumer");
+    RegistrationRequestDTO regWithIncorrectUserType1 = new RegistrationRequestDTO(null, null, "suplier");
+    RegistrationRequestDTO regWithIncorrectUserType2 = new RegistrationRequestDTO(null, null, "SzuPplier");
 
     //Assert
     assertThrows(InvalidUserTypeException.class,
       () -> registrationServiceMock.validateUserType(regWithIncorrectUserType1));
     assertThrows(InvalidUserTypeException.class,
       () -> registrationServiceMock.validateUserType(regWithIncorrectUserType2));
+  }
+
+  @Test
+  void validateUserType_InvaliConsumerdUserType() {
+    // Arrange;
+    RegistrationRequestDTO regWithIncorrectUserType3 = new RegistrationRequestDTO(null, null, "");
+    RegistrationRequestDTO regWithIncorrectUserType4 = new RegistrationRequestDTO(null, null, "konszumer");
+
+    //Assert
     assertThrows(InvalidUserTypeException.class,
       () -> registrationServiceMock.validateUserType(regWithIncorrectUserType3));
     assertThrows(InvalidUserTypeException.class,
@@ -135,8 +155,7 @@ class RegistrationServiceImpUnitTest {
   void checkUsernameIsAlredyTaken_WhenOtherSupplierIsExistingWithThatName() {
 
     // Arrange
-    RegistrationRequestDTO regSupplierWithOccupiedName =
-      new RegistrationRequestDTO("existingSupplierName", null, null);
+    RegistrationRequestDTO regSupplierWithOccupiedName = new RegistrationRequestDTO("existingSupplierName", null, null);
     when(supplierRepository.findByUsername("existingSupplierName")).thenReturn(Optional.of(new Supplier()));
 
     // Act
@@ -150,8 +169,7 @@ class RegistrationServiceImpUnitTest {
   void checkUsernameIsAlredyTaken_WhenOtherConsumerIsExistingWithThatName() {
 
     // Arrange
-    RegistrationRequestDTO regConsumerWithOccupiedName =
-      new RegistrationRequestDTO("existingConsumerName", null, null);
+    RegistrationRequestDTO regConsumerWithOccupiedName = new RegistrationRequestDTO("existingConsumerName", null, null);
     when(consumerRepository.findByUsername("existingConsumerName")).thenReturn(Optional.of(new Consumer()));
     // Act
 
@@ -161,23 +179,28 @@ class RegistrationServiceImpUnitTest {
   }
 
   @Test
-  void checkUsernameIsAlredyTaken_WhenUsernameIsFree() {
+  void checkUsernameIsAlredyTaken_WhenSupplierUsernameIsFree() {
 
     // Arrange
-    RegistrationRequestDTO regSupplierWithFreedName =
-      new RegistrationRequestDTO("FreeSupplierName", null, null);
-    RegistrationRequestDTO regConsumerWithFreedName =
-      new RegistrationRequestDTO("FreeConsumerName", null, null);
-
+    RegistrationRequestDTO regSupplierWithFreedName = new RegistrationRequestDTO("FreeSupplierName", null, null);
     when(supplierRepository.findByUsername("FreeSupplierName")).thenReturn(Optional.empty());
-    when(supplierRepository.findByUsername("FreeConsumerName")).thenReturn(Optional.empty());
-
-    // Act
-
-    // Assert
+    when(consumerRepository.findByUsername("FreeSupplierName")).thenReturn(Optional.empty());
+    // Act and Assert
     assertDoesNotThrow(() -> registrationServiceMock.checkUsernameIsAlredyTaken(regSupplierWithFreedName));
+  }
+
+  @Test
+  void checkUsernameIsAlredyTaken_WhenCoonsumerUsernameIsFree() {
+
+    // Arrange
+    RegistrationRequestDTO regConsumerWithFreedName = new RegistrationRequestDTO("FreeConsumerName", null, null);
+    when(supplierRepository.findByUsername("FreeConsumerName")).thenReturn(Optional.empty());
+    when(consumerRepository.findByUsername("FreeConsumerName")).thenReturn(Optional.empty());
+
+    // Act and Assert
     assertDoesNotThrow(() -> registrationServiceMock.checkUsernameIsAlredyTaken(regConsumerWithFreedName));
   }
+
 
   @Test
   void testValidatePassword_NullPassword() {

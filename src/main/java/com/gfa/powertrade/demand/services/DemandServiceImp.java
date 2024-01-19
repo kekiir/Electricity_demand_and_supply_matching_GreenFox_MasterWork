@@ -73,7 +73,7 @@ public class DemandServiceImp implements DemandService {
     demandBelongsToConsumer(demand, consumer.getId());
     timeService.validateGivenDates(demandUpdateRequestDTO.getFromTime(), demandUpdateRequestDTO.getToTime());
 
-   demandQuantityService.updateDemandQuantites(demandUpdateRequestDTO, demand);
+    demandQuantityService.updateDemandQuantites(demandUpdateRequestDTO, demand);
 
     updataDemand(demandUpdateRequestDTO, demand);
     return converterService.convertDemandToResponseDTO(demandRepository.save(demand));

@@ -9,11 +9,10 @@ import com.gfa.powertrade.registration.models.*;
 import com.gfa.powertrade.supplier.models.Supplier;
 import com.gfa.powertrade.supplier.repository.SupplierRepository;
 import com.gfa.powertrade.user.models.User;
-import lombok.*;
+import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -25,7 +24,7 @@ public class RegistrationServiceImp implements RegistrationService {
 
   @Override
   public RegistrationResponseDTO saveNewUser(RegistrationRequestDTO reg) throws AlreadyTakenUsernameException,
-    InvalidPasswordException {
+      InvalidPasswordException {
     validateRegistration(reg);
     if (reg.getUserType().toUpperCase().equals(UserType.SUPPLIER.toString())) {
       return saveSupplier(reg);
@@ -37,7 +36,7 @@ public class RegistrationServiceImp implements RegistrationService {
 
   public RegistrationResponseDTO saveSupplier(RegistrationRequestDTO reg) {
     Supplier supplier = Supplier.builder().username(reg.getUsername())
-      .password(hashPassword(reg.getPassword())).capacityList(new ArrayList<>()).build();
+        .password(hashPassword(reg.getPassword())).capacityList(new ArrayList<>()).build();
     supplier.setUserType(UserType.SUPPLIER);
     supplierRepository.save(supplier);
     return convert(supplier);
@@ -45,7 +44,7 @@ public class RegistrationServiceImp implements RegistrationService {
 
   public RegistrationResponseDTO saveConsumer(RegistrationRequestDTO reg) {
     Consumer consumer = Consumer.builder().username(reg.getUsername())
-      .password(hashPassword(reg.getPassword())).demandList(new ArrayList<>()).build();
+        .password(hashPassword(reg.getPassword())).demandList(new ArrayList<>()).build();
     consumer.setUserType(UserType.CONSUMER);
     consumerRepository.save(consumer);
     return convert(consumer);
@@ -53,7 +52,7 @@ public class RegistrationServiceImp implements RegistrationService {
 
   @Override
   public void validateRegistration(RegistrationRequestDTO reg) throws AlreadyTakenUsernameException,
-    InvalidPasswordException, InvalidUserTypeException {
+      InvalidPasswordException, InvalidUserTypeException {
     validateUserType(reg);
     checkUsernameIsAlredyTaken(reg);
     validatePassword(reg);
@@ -62,14 +61,14 @@ public class RegistrationServiceImp implements RegistrationService {
 
   public void validateUserType(RegistrationRequestDTO reg) throws InvalidUserTypeException {
     if (!reg.getUserType().toUpperCase().equals(
-      UserType.SUPPLIER.toString()) && !reg.getUserType().toUpperCase().equals(UserType.CONSUMER.toString()))
+        UserType.SUPPLIER.toString()) && !reg.getUserType().toUpperCase().equals(UserType.CONSUMER.toString()))
       throw new InvalidUserTypeException();
 
   }
 
   public void checkUsernameIsAlredyTaken(RegistrationRequestDTO reg) throws AlreadyTakenUsernameException {
     if (supplierRepository.findByUsername(reg.getUsername()).isPresent() || consumerRepository.findByUsername(
-      reg.getUsername()).isPresent())
+        reg.getUsername()).isPresent())
       throw new AlreadyTakenUsernameException("Username is already taken.");
 
   }

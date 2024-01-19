@@ -28,15 +28,15 @@ public class RegistrationController {
 
   @Operation(summary = "Registration", description = "Register a new player")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "201", description = "successful registration",
-          content = @Content(mediaType = "application/json",
-              schema = @Schema(implementation = RegistrationResponseDTO.class))),
-      @ApiResponse(responseCode = "409", description = "username is already taken",
-          content = @Content(mediaType = "application/json",
-              schema = @Schema(implementation = ErrorDTO.class))),
-      @ApiResponse(responseCode = "406", description = "invalid password",
-          content = @Content(mediaType = "application/json",
-              schema = @Schema(implementation = ErrorDTO.class))),
+    @ApiResponse(responseCode = "201", description = "successful registration",
+      content = @Content(mediaType = "application/json",
+        schema = @Schema(implementation = RegistrationResponseDTO.class))),
+    @ApiResponse(responseCode = "409", description = "username is already taken",
+      content = @Content(mediaType = "application/json",
+        schema = @Schema(implementation = ErrorDTO.class))),
+    @ApiResponse(responseCode = "406", description = "invalid password",
+      content = @Content(mediaType = "application/json",
+        schema = @Schema(implementation = ErrorDTO.class))),
   })
   @PostMapping("/register")
   public ResponseEntity<?> register(@Valid @RequestBody RegistrationRequestDTO registrationRequestDTO) {

@@ -10,7 +10,6 @@ import com.gfa.powertrade.demand.models.DemandUpdateRequestDTO;
 import com.gfa.powertrade.demand.repositories.DemandRepository;
 import com.gfa.powertrade.demandquantity.models.DemandQuantity;
 import com.gfa.powertrade.demandquantity.repositories.DemandQuantityRepository;
-import com.gfa.powertrade.powerquantity.models.PowerQuantity;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,15 +28,15 @@ public class DemandQuantityServiceImp implements DemandQuantityService {
 
   @Override
   public void createDemandQuantities(Demand demand, Long fromTime, Long toTime) {
-    Long numberOfbalancedHours = balancedHourService.calculateNumberOfBallanceHours(toTime,fromTime);
+    Long numberOfbalancedHours = balancedHourService.calculateNumberOfBallanceHours(toTime, fromTime);
     Long firstDemandQuantityFromTime = fromTime;
     Long firstDemandQuiantityToTime = firstDemandQuantityFromTime + BalancedHourServiceImp.oneHourInMilliSeconds;
     for (int i = 1; i <= numberOfbalancedHours; i++) {
       DemandQuantity newDemandQuantity = createNewDemandQuantity(demand, firstDemandQuantityFromTime,
-        firstDemandQuiantityToTime);
-      BalancedHour balancedHour =
-        balancedHourService.findOrCreateIfNotfoundBalancedHour(firstDemandQuantityFromTime,
           firstDemandQuiantityToTime);
+      BalancedHour balancedHour =
+          balancedHourService.findOrCreateIfNotfoundBalancedHour(firstDemandQuantityFromTime,
+              firstDemandQuiantityToTime);
       newDemandQuantity.setBalancedHour(balancedHour);
       balancedHourRepository.save(balancedHour);
       demandQuantityRepository.save(newDemandQuantity);
@@ -52,11 +51,11 @@ public class DemandQuantityServiceImp implements DemandQuantityService {
   @Override
   public DemandQuantity createNewDemandQuantity(Demand demand, Long fromTime, Long toTime) {
     return DemandQuantity.builder()
-      .demand(demand)
-      .demandQuantityAmount(demand.getDemandAmount())
-      .demandQuantityFromTime(fromTime)
-      .demandQuantityToTime(toTime)
-      .build();
+        .demand(demand)
+        .demandQuantityAmount(demand.getDemandAmount())
+        .demandQuantityFromTime(fromTime)
+        .demandQuantityToTime(toTime)
+        .build();
   }
 
   @Override
@@ -71,7 +70,7 @@ public class DemandQuantityServiceImp implements DemandQuantityService {
       createDemandQuantitiesDependingOnToTime(demand, updatedDemandToTime);
 
     if (demand.getDemandFromTime() < updatedDemandFromTime
-      || updatedDemandToTime < demand.getDemandToTime()) {
+        || updatedDemandToTime < demand.getDemandToTime()) {
       deleteDemandQuantities(demand, updatedDemandFromTime, updatedDemandToTime);
     }
   }
@@ -79,7 +78,6 @@ public class DemandQuantityServiceImp implements DemandQuantityService {
   private void createDemandQuantitiesDependingOnFromTime(Demand demand, Long updatedDemandFromTime) {
     createDemandQuantities(demand, updatedDemandFromTime, demand.getDemandFromTime());
   }
-
 
   @Override
   public void createDemandQuantitiesDependingOnToTime(Demand demand, Long updatedDemandToTime) {
@@ -89,11 +87,11 @@ public class DemandQuantityServiceImp implements DemandQuantityService {
 
   @Transactional
   public void deleteDemandQuantities(Demand demand, Long updatedDemandFromTime,
-    Long updatedDemandToTime) {
+      Long updatedDemandToTime) {
     List<DemandQuantity> deletedPowrQuantites = new ArrayList<>();
     for (DemandQuantity pq : demand.getDemandQuantityList()) {
       if (updatedDemandFromTime > pq.getDemandQuantityFromTime()
-        || updatedDemandToTime < pq.getDemandQuantityToTime()) {
+          || updatedDemandToTime < pq.getDemandQuantityToTime()) {
         deletedPowrQuantites.add(pq);
       }
     }
@@ -101,8 +99,5 @@ public class DemandQuantityServiceImp implements DemandQuantityService {
     demand.getDemandQuantityList().removeAll(deletedPowrQuantites);
     demandRepository.save(demand);
   }
-
-
-
 
 }
