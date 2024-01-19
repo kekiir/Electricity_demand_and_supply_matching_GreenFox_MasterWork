@@ -5,9 +5,10 @@ import com.gfa.powertrade.consumers.models.Consumer;
 import com.gfa.powertrade.consumers.repositories.ConsumerRepository;
 import com.gfa.powertrade.registration.exceptions.AlreadyTakenUsernameException;
 import com.gfa.powertrade.registration.exceptions.InvalidPasswordException;
-import com.gfa.powertrade.registration.models.RegistrationRequestDTO;
+import com.gfa.powertrade.registration.models.*;
 import com.gfa.powertrade.supplier.models.Supplier;
 import com.gfa.powertrade.supplier.repository.SupplierRepository;
+import com.gfa.powertrade.user.models.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -19,6 +20,7 @@ import static org.mockito.Mockito.*;
 
 class RegistrationServiceImpUnitTest {
 
+  RegistrationServiceImp registrationServiceImp;
   private RegistrationServiceImp registrationServiceMock;
   private RegistrationServiceImp registrationServiceSpy;
   private ConsumerRepository consumerRepository;
@@ -26,6 +28,7 @@ class RegistrationServiceImpUnitTest {
 
   @BeforeEach
   void setUp() {
+    registrationServiceImp = new RegistrationServiceImp(null, null);
     consumerRepository = mock(ConsumerRepository.class);
     supplierRepository = mock(SupplierRepository.class);
     registrationServiceMock = new RegistrationServiceImp(supplierRepository, consumerRepository);
@@ -201,11 +204,11 @@ class RegistrationServiceImpUnitTest {
     assertDoesNotThrow(() -> registrationServiceMock.checkUsernameIsAlredyTaken(regConsumerWithFreedName));
   }
 
-
   @Test
   void testValidatePassword_NullPassword() {
     // Arrange
-    RegistrationRequestDTO regWithNullPassword = new RegistrationRequestDTO();
+    RegistrationRequestDTO regWithNullPassword = new RegistrationRequestDTO("ValidName",null,
+      UserType.SUPPLIER.toString());
 
     // Act
 
@@ -240,12 +243,47 @@ class RegistrationServiceImpUnitTest {
 
   }
 
+
   @Test
-  void hashPassword() {
+  void testHashPassword_ConsistentHashing() {
+    //Arrange
+    String password = "testPassword";
+
+    //Act
+    String hashedPassword1 = registrationServiceImp.hashPassword(password);
+    String hashedPassword2 = registrationServiceImp.hashPassword(password);
+
+    //Assert
+    assertNotEquals(hashedPassword1, hashedPassword2);
+  }
+
+
+  @Test
+  void convert_NullUser_ShouldReturn_Null() {
+    //Assert
+
+    //Act
+    RegistrationResponseDTO result = registrationServiceImp.convert(null);
+
+    //Assert
+    assertNull(result);
   }
 
   @Test
-  void convert() {
+  void convert_NonNulUser_ShouldReturn_RegistrationResponseDTO() {
+    //Assert
+    User user = new User(1, "userName", "userPassword", UserType.SUPPLIER);
+    RegistrationResponseDTO expected = new RegistrationResponseDTO(1, "userName", UserType.SUPPLIER);
+    RegistrationServiceImp registrationService = new RegistrationServiceImp(null, null);
+
+    //Act
+    RegistrationResponseDTO result = registrationService.convert(user);
+
+    //Assert
+    assertEquals(expected.getId(), result.getId());
+    assertEquals(expected.getUsername(), result.getUsername());
+    assertEquals(expected.getUserType(), result.getUserType());
+
   }
 
 }
