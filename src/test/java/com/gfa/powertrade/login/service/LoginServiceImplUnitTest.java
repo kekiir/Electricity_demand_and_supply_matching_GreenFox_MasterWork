@@ -1,7 +1,9 @@
 package com.gfa.powertrade.login.service;
 
 import com.gfa.powertrade.common.exceptions.InvalidUserTypeException;
+import com.gfa.powertrade.login.exceptions.LoginFailureException;
 import com.gfa.powertrade.login.models.LoginDTO;
+import com.gfa.powertrade.login.models.TokenResponseDTO;
 import com.gfa.powertrade.security.JwtSystemKeys;
 import com.gfa.powertrade.user.models.User;
 import com.gfa.powertrade.user.services.UserService;
@@ -39,26 +41,61 @@ class LoginServiceImplUnitTest {
   }
 
   @Test
-  void login() {
-    //Arrange
-    doNothing().when(loginServiceSpy).validateUsertype(any(LoginDTO.class));
-    when(userServiceMock.findByUsername(anyString(), anyString())).thenReturn(Optional.of(new User()));
+  void login_with_validLogin() {
     try (MockedStatic<BCrypt> bCryptMockedStatic = Mockito.mockStatic(BCrypt.class)) {
+      //Arrange
+      doNothing().when(loginServiceSpy).validateUsertype(any(LoginDTO.class));
+      when(userServiceMock.findByUsername(anyString(), anyString())).thenReturn(Optional.of(new User()));
       bCryptMockedStatic.when(() -> BCrypt.checkpw(anyString(), any())).thenReturn(true);
+      doReturn(new String("jws")).when(loginServiceSpy).createToken(any(User.class));
+      TokenResponseDTO tokenResponseDtoExpect = new TokenResponseDTO("jws");
 
-      boolean bCrpytChpw = BCrypt.checkpw("pass", "pass");
-      assertTrue(bCrpytChpw);
+      //Act
+      TokenResponseDTO tokenResponseDtoResult = loginServiceSpy.login(validLogin);
+
+      //Assert
+      assertEquals(tokenResponseDtoExpect.getToken(), tokenResponseDtoResult.getToken());
+      assertDoesNotThrow(()-> loginServiceSpy.login(validLogin));
     }
 
-    //Act
+  }
+
+  @Test
+  void login_with_InValid_username() {
+    try (MockedStatic<BCrypt> bCryptMockedStatic = Mockito.mockStatic(BCrypt.class)) {
+      //Arrange
+      LoginDTO inValidLogin = new LoginDTO("InValidName", "validPassword", "validUserType");
+      doNothing().when(loginServiceSpy).validateUsertype(any(LoginDTO.class));
+      when(userServiceMock.findByUsername(anyString(), anyString())).thenReturn(Optional.empty());
+      bCryptMockedStatic.when(() -> BCrypt.checkpw(anyString(), any())).thenReturn(true);
 
 
-    //Assert
+      //Act and Assert
+      assertThrows(LoginFailureException.class, () ->loginServiceSpy.login(inValidLogin));
+
+    }
+
+  }
+
+  @Test
+  void login_with_InValid_password() {
+    try (MockedStatic<BCrypt> bCryptMockedStatic = Mockito.mockStatic(BCrypt.class)) {
+      //Arrange
+      LoginDTO inValidLogin = new LoginDTO("validName", "InValidPassword", "validUserType");
+      doNothing().when(loginServiceSpy).validateUsertype(any(LoginDTO.class));
+      when(userServiceMock.findByUsername(anyString(), anyString())).thenReturn(Optional.of(new User()));
+      bCryptMockedStatic.when(() -> BCrypt.checkpw(anyString(), any())).thenReturn(false);
+
+
+      //Act and Assert
+      assertThrows(LoginFailureException.class, () ->loginServiceSpy.login(inValidLogin));
+    }
 
   }
 
   @Test
   void createToken() {
+
   }
 
   @Test
@@ -70,7 +107,7 @@ class LoginServiceImplUnitTest {
   }
 
   @Test
-  void validateUsertype_with_inValid_Usertye() {
+  void validateUsertype_with_inValid_UserType() {
     //Arrange
     LoginDTO inValidLogin = new LoginDTO("validName", "validPassword", "invalidUsertype");
 
