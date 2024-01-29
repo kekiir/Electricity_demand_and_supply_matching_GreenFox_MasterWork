@@ -25,8 +25,6 @@ public class SecurityConfig {
     httpSecurity
         .csrf().disable()
         .httpBasic().disable()
-        .cors()
-        .and()
         .addFilterBefore(jwtFilter, BasicAuthenticationFilter.class)
         .authorizeRequests()
         .antMatchers("/**").permitAll()
@@ -41,5 +39,6 @@ public class SecurityConfig {
 
     return httpSecurity.build();
   }
+
 
 }
