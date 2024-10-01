@@ -12,6 +12,6 @@ public class MessagesController {
 
   @GetMapping("/messages")
   public ResponseEntity<List<String>> messages() {
-    return ResponseEntity.ok(Arrays.asList("pöcs", "ömöccse"));
+    return ResponseEntity.ok(Arrays.asList("mű", "ködik"));
   }
 }
