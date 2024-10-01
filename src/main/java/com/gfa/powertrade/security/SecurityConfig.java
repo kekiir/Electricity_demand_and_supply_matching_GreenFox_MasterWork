@@ -50,7 +50,7 @@ public class SecurityConfig {
   private CorsConfiguration setCorsConfig () {
     CorsConfiguration config = new CorsConfiguration();
     config.setAllowCredentials(true);
-    config.addAllowedOrigin("http://localhost:5174");
+    config.addAllowedOrigin("http://localhost:5173");
     config.setAllowedHeaders(Arrays.asList(
       HttpHeaders.AUTHORIZATION,
       HttpHeaders.CONTENT_TYPE,

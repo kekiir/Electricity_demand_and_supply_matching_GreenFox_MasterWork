@@ -29,7 +29,7 @@ public class Capacity {
   private Integer id;
   @Enumerated(EnumType.STRING)
   @Column(name = "energy_source",
-      columnDefinition = "ENUM('COAL','GAS','NUCLEAR','HYDRO','WIND','SOLAR','BIO','WASTE')")
+    columnDefinition = "ENUM('COAL','GAS','NUCLEAR','HYDRO','WIND','SOLAR','BIO','WASTE')")
   private EnergySource energySource;
   private Double capacityAmount;
   private Double available;
@@ -42,13 +42,11 @@ public class Capacity {
   @OneToMany(mappedBy = "capacity", cascade = CascadeType.ALL)
   @LazyCollection(LazyCollectionOption.FALSE)
   private List<Contract> contractList;
+
   @OneToMany(mappedBy = "capacity", cascade = CascadeType.ALL)
   @LazyCollection(LazyCollectionOption.FALSE)
   @OnDelete(action = OnDeleteAction.CASCADE)
   private List<PowerQuantity> powerQuantityList;
-
-
-
 
   public void setCapacityAmount(Double newAmount) {
     Double contractedAmount = capacityAmount - available;
